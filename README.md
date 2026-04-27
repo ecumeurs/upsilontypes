@@ -1,6 +1,6 @@
-# Upsilon Types
+# UpsilonTypes
 
-**Upsilon Types** is the central repository for core data structures, enums, and shared types used across the Upsilon ecosystem.
+**UpsilonTypes** is the central repository for core data structures, enums, and shared types used across the Upsilon ecosystem.
 
 This subproject serves as the "Single Source of Truth" for all entities and properties, ensuring that the **Battle Engine**, **API**, **UI**, and **CLI** operate on identical data definitions.
 
@@ -8,7 +8,7 @@ This subproject serves as the "Single Source of Truth" for all entities and prop
 
 - **Decoupling**: By isolating type definitions from business logic (mechanics/ruler), we prevent circular dependencies between the engine and its consumers.
 - **Traceability**: Every type defined here is linked to an **Atomic Documentation (ATD)** atom, ensuring that implementation exactly matches the architectural specification.
-- **Stability**: As a leaf-level package, `upsilon-types` is designed for high stability and low volatility.
+- **Stability**: As a leaf-level package, `upsilontypes` is designed for high stability and low volatility.
 
 ## 📂 Package Structure
 
@@ -27,14 +27,14 @@ To use these types in your Go project:
 
 ```go
 import (
-    "github.com/ecumeurs/upsilon-types/entity"
-    "github.com/ecumeurs/upsilon-types/property"
+    "github.com/ecumeurs/upsilontypes/entity"
+    "github.com/ecumeurs/upsilontypes/property"
 )
 ```
 
 ## 🔗 ATD Traceability
 
-This project strictly follows the ATD ruleset. All core structs and enums are annotated with `@spec-link` tags pointing to their respective atoms in the documentation.
+This project strictly follows the ATD ruleset. All core structs and enums are annotated with `@spec-link` tags pointing to their respective atoms in the documentation, which are housed directly in `upsilontypes/docs/`.
 
 Example:
 ```go
@@ -49,9 +49,9 @@ type Character struct {
 ## 🛠️ Development
 
 When adding new types or properties:
-1. Ensure a corresponding **DRAFT** or **STABLE** atom exists in the documentation.
+1. Ensure a corresponding **DRAFT** or **STABLE** atom exists in `upsilontypes/docs/`.
 2. Add the type with the appropriate `@spec-link` annotation.
-3. Run `atd_weave` to update the dependency graph.
+3. Run `atd_weave` to update the dependency graph across the workspace.
 4. Verify implementation coverage using `atd_trace`.
 
 ---
