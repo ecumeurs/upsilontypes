@@ -7,6 +7,7 @@ parents:
   - [[rule_character_skill_slots]]
 dependents:
   - [[api_character_skill_inventory]]
+  - [[rule_character_skill_slots]]
 priority: 5
 layer: ARCHITECTURE
 version: 2.0
