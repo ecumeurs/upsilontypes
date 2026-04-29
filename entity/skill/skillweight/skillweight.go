@@ -4,6 +4,7 @@ import (
 	"github.com/ecumeurs/upsilontypes/entity/skill"
 	"github.com/ecumeurs/upsilontypes/property"
 	"github.com/ecumeurs/upsilontypes/property/def"
+	"github.com/ecumeurs/upsilontypes/property/defaultproperty"
 )
 
 // Calculate computes the positive, negative, and net Skill Weight (SW) for a given skill.
@@ -27,9 +28,9 @@ func Calculate(s skill.Skill) (positiveSW int, negativeSW int, netSW int) {
 
 	// Range Extension: +10 SW per cell > 1
 	rangeProp := s.GetProperty(property.Range)
-	if rp, ok := rangeProp.(*def.RangeProperty); ok {
-		if rp.MaxRange > 1 {
-			positiveSW += (rp.MaxRange - 1) * 10
+	if rp, ok := rangeProp.(property.IntCounterProperty); ok {
+		if rp.GetMaxValue() > 1 {
+			positiveSW += (rp.GetMaxValue() - 1) * 10
 		}
 	}
 
@@ -44,8 +45,8 @@ func Calculate(s skill.Skill) (positiveSW int, negativeSW int, netSW int) {
 
 	// Target Anywhere: +40 SW
 	targetingMech := s.GetProperty(property.TargetingMechanics)
-	if tm, ok := targetingMech.(*def.TargetingMechanicsProperty); ok {
-		if tm.TargetingMechanics == def.TargetingMechanicsAnywhere {
+	if tm, ok := targetingMech.(*defaultproperty.DefaultStringProperty); ok {
+		if tm.Get().(string) == string(def.TargetingMechanicsAnywhere) {
 			positiveSW += 40
 		}
 	}

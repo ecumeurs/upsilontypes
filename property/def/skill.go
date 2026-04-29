@@ -198,71 +198,8 @@ func (bh *BehaviorProperty) UnapplyBuff(p property.Property) property.Property {
 	return res
 }
 
-// Range property.Property: 	Range TargetingProperties = "Range" // Range of the property.Skill
-
-type RangeProperty struct {
-	property.Property
-	MinRange int
-	MaxRange int
-}
-
-// MakeRangeProperty
-func MakeRangeProperty(min, max int) *RangeProperty {
-	return &RangeProperty{
-		MinRange: min,
-		MaxRange: max,
-	}
-}
-
-// DefaultRangeProperty
-func DefaultRange() *RangeProperty {
-	return MakeRangeProperty(1, 1)
-}
-
-func (bh *RangeProperty) ApplyBuff(p property.Property) property.Property {
-	res := bh.Duplicate().(*RangeProperty)
-	// replace
-	res.MinRange = p.(*RangeProperty).MinRange
-	res.MaxRange = p.(*RangeProperty).MaxRange
-	return res
-}
-func (bh *RangeProperty) UnapplyBuff(p property.Property) property.Property {
-	res := bh.Duplicate().(*RangeProperty)
-	// TODO :)
-	res.MinRange = p.(*RangeProperty).MinRange
-	res.MaxRange = p.(*RangeProperty).MaxRange
-	return res
-}
-
-func (bh *RangeProperty) Name(i property.InformationLevel) string {
-	return "Range"
-}
-
-func (bh *RangeProperty) UserFriendlyGet(i property.InformationLevel) interface{} {
-	return fmt.Sprintf("%d - %d", bh.MinRange, bh.MaxRange)
-}
-
-func (bh *RangeProperty) Get() interface{} {
-	return bh
-}
-
-func (bh *RangeProperty) Set(p interface{}) {
-	// will be altered directly.
-}
-
-func (bh *RangeProperty) Increase() {
-	// shouldn't be upgradable.... well maybe convert a Direct skill to a Reaction or Counter ? fun...
-}
-
-func (bh *RangeProperty) GetType() property.PropertyType {
-	return property.Skill
-}
-
-func (bh *RangeProperty) Duplicate() property.Property {
-	return &RangeProperty{
-		MinRange: bh.MinRange,
-		MaxRange: bh.MaxRange,
-	}
+func DefaultRange() *defaultproperty.DefaultIntCounterProperty {
+	return defaultproperty.MakeIntCounterProperty(property.Range, 1, 1, property.FriendlyController, property.Skill)
 }
 
 // Zone         TargetingProperties = "Zone"  // Area of Effect
@@ -342,64 +279,16 @@ const (
 	TargetTypeSelf         TargetTypes = "Self"
 )
 
-type TargetTypeProperty struct {
-	property.Property
-	TargetType TargetTypes
-}
-
-// MakeTargetTypeProperty
-func MakeTargetTypeProperty(tt TargetTypes) *TargetTypeProperty {
-	return &TargetTypeProperty{
-		TargetType: tt,
-	}
-}
-
 // DefaultTargetTypeProperty
-func DefaultTargetType() *TargetTypeProperty {
-	return MakeTargetTypeProperty(TargetTypeEntity)
-}
-
-func (bh *TargetTypeProperty) ApplyBuff(p property.Property) property.Property {
-	res := bh.Duplicate().(*TargetTypeProperty)
-	// replace
-	res.TargetType = p.(*TargetTypeProperty).TargetType
-	return res
-}
-
-func (bh *TargetTypeProperty) UnapplyBuff(p property.Property) property.Property {
-	res := bh.Duplicate().(*TargetTypeProperty)
-	// TODO
-	res.TargetType = p.(*TargetTypeProperty).TargetType
-	return res
-}
-
-func (bh *TargetTypeProperty) Name(i property.InformationLevel) string {
-	return "TargetType"
-}
-
-func (bh *TargetTypeProperty) UserFriendlyGet(i property.InformationLevel) interface{} {
-	return bh.TargetType
-}
-
-func (bh *TargetTypeProperty) Get() interface{} {
-	return bh.TargetType
-}
-
-func (bh *TargetTypeProperty) Set(p interface{}) {
-	// will be altered directly.
-}
-
-func (bh *TargetTypeProperty) Increase() {
-}
-
-func (bh *TargetTypeProperty) GetType() property.PropertyType {
-	return property.Skill
-}
-
-func (bh *TargetTypeProperty) Duplicate() property.Property {
-	return &TargetTypeProperty{
-		TargetType: bh.TargetType,
-	}
+func DefaultTargetType() *defaultproperty.DefaultStringProperty {
+	return defaultproperty.MakeValidatedStringProperty(property.TargetType, string(TargetTypeEntity), property.FriendlyController, property.Skill, []string{
+		string(TargetTypeEntity),
+		string(TargetTypeFriendOnly),
+		string(TargetTypeEnemyOnly),
+		string(TargetTypeTile),
+		string(TargetTypeEntityOrTile),
+		string(TargetTypeSelf),
+	})
 }
 
 // TargetingMechanics TargetingProperties = "TargetingMechanics" // Anywhere, Line of Sight, and maybe other mechanics later.
@@ -411,64 +300,12 @@ const (
 	TargetingMechanicsLOS      TargetingMechanicsType = "Line of Sight"
 )
 
-type TargetingMechanicsProperty struct {
-	property.Property
-	TargetingMechanics TargetingMechanicsType
-}
-
-// MakeTargetingMechanicsProperty
-func MakeTargetingMechanicsProperty(tm TargetingMechanicsType) *TargetingMechanicsProperty {
-	return &TargetingMechanicsProperty{
-		TargetingMechanics: tm,
-	}
-}
-
 // DefaultTargetingMechanicsProperty
-func DefaultTargetingMechanics() *TargetingMechanicsProperty {
-	return MakeTargetingMechanicsProperty(TargetingMechanicsAnywhere)
-}
-
-func (bh *TargetingMechanicsProperty) Name(i property.InformationLevel) string {
-	return "TargetingMechanics"
-}
-
-func (bh *TargetingMechanicsProperty) UserFriendlyGet(i property.InformationLevel) interface{} {
-	return bh.TargetingMechanics
-}
-
-func (bh *TargetingMechanicsProperty) Get() interface{} {
-	return bh
-}
-
-func (bh *TargetingMechanicsProperty) Set(p interface{}) {
-	// will be altered directly.
-}
-
-func (bh *TargetingMechanicsProperty) Increase() {
-}
-
-func (bh *TargetingMechanicsProperty) GetType() property.PropertyType {
-	return property.Skill
-}
-
-func (bh *TargetingMechanicsProperty) Duplicate() property.Property {
-	return &TargetingMechanicsProperty{
-		TargetingMechanics: bh.TargetingMechanics,
-	}
-}
-
-func (bh *TargetingMechanicsProperty) ApplyBuff(p property.Property) property.Property {
-	res := bh.Duplicate().(*TargetingMechanicsProperty)
-	// replace
-	res.TargetingMechanics = p.(*TargetingMechanicsProperty).TargetingMechanics
-	return res
-}
-
-func (bh *TargetingMechanicsProperty) UnapplyBuff(p property.Property) property.Property {
-	res := bh.Duplicate().(*TargetingMechanicsProperty)
-	// TODO
-	res.TargetingMechanics = p.(*TargetingMechanicsProperty).TargetingMechanics
-	return res
+func DefaultTargetingMechanics() *defaultproperty.DefaultStringProperty {
+	return defaultproperty.MakeValidatedStringProperty(property.TargetingMechanics, string(TargetingMechanicsAnywhere), property.FriendlyController, property.Skill, []string{
+		string(TargetingMechanicsAnywhere),
+		string(TargetingMechanicsLOS),
+	})
 }
 
 func SkillProperty(ps property.SkillProperties) property.Property {

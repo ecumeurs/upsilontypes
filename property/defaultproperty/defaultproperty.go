@@ -397,9 +397,14 @@ type DefaultStringProperty struct {
 	name                string
 	minInformationLevel property.InformationLevel
 	propertyType        property.PropertyType
+	AllowedValues       []string
 }
 
 func MakeStringProperty(name interface{}, value string, minInformationLevel property.InformationLevel, pt property.PropertyType) *DefaultStringProperty {
+	return MakeValidatedStringProperty(name, value, minInformationLevel, pt, nil)
+}
+
+func MakeValidatedStringProperty(name interface{}, value string, minInformationLevel property.InformationLevel, pt property.PropertyType, allowed []string) *DefaultStringProperty {
 	nname := property.PropertyToString(name)
 	if nname == "" {
 		return nil
@@ -410,6 +415,7 @@ func MakeStringProperty(name interface{}, value string, minInformationLevel prop
 		value:               value,
 		minInformationLevel: minInformationLevel,
 		propertyType:        pt,
+		AllowedValues:       allowed,
 	}
 }
 
@@ -432,7 +438,20 @@ func (d DefaultStringProperty) Get() interface{} {
 }
 
 func (d *DefaultStringProperty) Set(p interface{}) {
-	d.value = p.(string)
+	val := p.(string)
+	if len(d.AllowedValues) > 0 {
+		found := false
+		for _, v := range d.AllowedValues {
+			if v == val {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return
+		}
+	}
+	d.value = val
 }
 
 func (d DefaultStringProperty) Increase() {
@@ -449,6 +468,7 @@ func (d DefaultStringProperty) Duplicate() property.Property {
 		name:                d.name,
 		minInformationLevel: d.minInformationLevel,
 		propertyType:        d.propertyType,
+		AllowedValues:       d.AllowedValues,
 	}
 }
 
