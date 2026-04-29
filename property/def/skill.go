@@ -1,8 +1,6 @@
 package def
 
 import (
-	"fmt"
-
 	"github.com/ecumeurs/upsilontypes/property"
 	"github.com/ecumeurs/upsilontypes/property/defaultproperty"
 	"github.com/ecumeurs/upsilonmapdata/grid/position/pattern"
