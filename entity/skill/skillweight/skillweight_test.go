@@ -5,7 +5,6 @@ import (
 
 	"github.com/ecumeurs/upsilontypes/entity/skill"
 	"github.com/ecumeurs/upsilontypes/property"
-	"github.com/ecumeurs/upsilontypes/property/def"
 	"github.com/ecumeurs/upsilontypes/property/defaultproperty"
 )
 
@@ -18,7 +17,7 @@ func TestSkillWeightCalculator(t *testing.T) {
 	// Add Critical Chance property (+50 SW)
 	s1.Effect.Properties = append(s1.Effect.Properties, defaultproperty.MakeIntProperty(property.CriticalChance, 25, property.Public, property.Skill))
 	// Set Range to 3 (+20 SW)
-	s1.Targeting[property.Range.String()] = def.MakeRangeProperty(1, 3)
+	s1.Targeting[property.Range.String()] = defaultproperty.MakeIntCounterProperty(property.Range, 1, 3, property.FriendlyController, property.Skill)
 
 	pSW, nSW, _ := Calculate(s1)
 
