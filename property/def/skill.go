@@ -130,24 +130,27 @@ func DefaultRange() *defaultproperty.DefaultIntCounterProperty {
 type ZoneProperty struct {
 	property.Property
 	ZonePattern pattern.Pattern
+	PatternType string
 }
 
 // MakeZoneProperty
-func MakeZoneProperty(zp pattern.Pattern) *ZoneProperty {
+func MakeZoneProperty(zp pattern.Pattern, pt string) *ZoneProperty {
 	return &ZoneProperty{
 		ZonePattern: zp,
+		PatternType: pt,
 	}
 }
 
 // DefaultZoneProperty
 func DefaultZone() *ZoneProperty {
-	return MakeZoneProperty(pattern.Single())
+	return MakeZoneProperty(pattern.Single(), "Single")
 }
 
 func (bh *ZoneProperty) ApplyBuff(p property.Property) property.Property {
 	res := bh.Duplicate().(*ZoneProperty)
 	// replace
 	res.ZonePattern = p.(*ZoneProperty).ZonePattern
+	res.PatternType = p.(*ZoneProperty).PatternType
 	return res
 }
 
@@ -155,6 +158,7 @@ func (bh *ZoneProperty) UnapplyBuff(p property.Property) property.Property {
 	res := bh.Duplicate().(*ZoneProperty)
 	// TODO
 	res.ZonePattern = p.(*ZoneProperty).ZonePattern
+	res.PatternType = p.(*ZoneProperty).PatternType
 	return res
 }
 
@@ -171,7 +175,18 @@ func (bh *ZoneProperty) Get() interface{} {
 }
 
 func (bh *ZoneProperty) Set(p interface{}) {
-	// will be altered directly.
+	if s, ok := p.(string); ok {
+		bh.PatternType = s
+		// Simple parser for standard patterns
+		if s == "Single" {
+			bh.ZonePattern = pattern.Single()
+		} else if s == "Neighbours" {
+			bh.ZonePattern = pattern.Neighbours()
+		} else {
+			// fallback to single if unknown
+			bh.ZonePattern = pattern.Single()
+		}
+	}
 }
 
 func (bh *ZoneProperty) Increase() {
@@ -185,6 +200,7 @@ func (bh *ZoneProperty) GetType() property.PropertyType {
 func (bh *ZoneProperty) Duplicate() property.Property {
 	return &ZoneProperty{
 		ZonePattern: bh.ZonePattern,
+		PatternType: bh.PatternType,
 	}
 }
 
