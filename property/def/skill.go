@@ -99,101 +99,25 @@ func Cooldown() *defaultproperty.DefaultIntCounterProperty {
 // Note: Behavior is a property because ...
 // Expect buffs to have an impact on behavior (e.g. a buff that makes a skill a counter skill)
 
-type BehaviorType int
+type BehaviorType string
 
 const (
-	BehaviorTypeDirect BehaviorType = iota
-	BehaviorTypeReaction
-	BehaviorTypePassive
-	BehaviorTypeCounter
-	BehaviorTypeTrap
+	BehaviorTypeDirect   BehaviorType = "Direct"
+	BehaviorTypeReaction BehaviorType = "Reaction"
+	BehaviorTypePassive  BehaviorType = "Passive"
+	BehaviorTypeCounter  BehaviorType = "Counter"
+	BehaviorTypeTrap     BehaviorType = "Trap"
 )
 
-type BehaviorProperty struct {
-	property.Property
-	BehaviorType BehaviorType
-}
-
-// IsDirect
-func (bh *BehaviorProperty) IsDirect() bool {
-	return bh.BehaviorType == BehaviorTypeDirect
-}
-
-// IsReaction
-func (bh *BehaviorProperty) IsReaction() bool {
-	return bh.BehaviorType == BehaviorTypeReaction
-}
-
-// IsPassive
-func (bh *BehaviorProperty) IsPassive() bool {
-	return bh.BehaviorType == BehaviorTypePassive
-}
-
-// IsCounter
-func (bh *BehaviorProperty) IsCounter() bool {
-	return bh.BehaviorType == BehaviorTypeCounter
-}
-
-// IsTrap
-func (bh *BehaviorProperty) IsTrap() bool {
-	return bh.BehaviorType == BehaviorTypeTrap
-}
-
-// MakeBehaviorProperty creates a BehaviorProperty
-func MakeBehaviorProperty(bh BehaviorType) *BehaviorProperty {
-	return &BehaviorProperty{
-		BehaviorType: bh,
-	}
-}
-
 // DefaultBehaviorProperty
-func DefaultBehavior() *BehaviorProperty {
-	return MakeBehaviorProperty(BehaviorTypeDirect)
-}
-
-func (bh *BehaviorProperty) Name(i property.InformationLevel) string {
-	return "Behavior"
-}
-
-func (bh *BehaviorProperty) UserFriendlyGet(i property.InformationLevel) interface{} {
-	return bh.BehaviorType
-}
-
-func (bh *BehaviorProperty) Get() interface{} {
-	return bh.BehaviorType
-}
-
-func (bh *BehaviorProperty) Set(p interface{}) {
-	// shouldn't be altered.
-	bh.BehaviorType = p.(BehaviorType)
-}
-
-func (bh *BehaviorProperty) Increase() {
-	// shouldn't be upgradable.... well maybe convert a Direct skill to a Reaction or Counter ? fun...
-}
-
-func (bh *BehaviorProperty) GetType() property.PropertyType {
-	return property.Skill
-}
-
-func (db *BehaviorProperty) Duplicate() property.Property {
-	return &BehaviorProperty{
-		BehaviorType: db.BehaviorType,
-	}
-}
-
-func (bh *BehaviorProperty) ApplyBuff(p property.Property) property.Property {
-	res := bh.Duplicate().(*BehaviorProperty)
-	// replace
-	res.BehaviorType = p.(*BehaviorProperty).BehaviorType
-	return res
-}
-
-func (bh *BehaviorProperty) UnapplyBuff(p property.Property) property.Property {
-	res := bh.Duplicate().(*BehaviorProperty)
-	// TODO ... :)
-	res.BehaviorType = p.(*BehaviorProperty).BehaviorType
-	return res
+func DefaultBehavior() *defaultproperty.DefaultStringProperty {
+	return defaultproperty.MakeValidatedStringProperty(property.Behavior, string(BehaviorTypeDirect), property.FriendlyController, property.Skill, []string{
+		string(BehaviorTypeDirect),
+		string(BehaviorTypeReaction),
+		string(BehaviorTypePassive),
+		string(BehaviorTypeCounter),
+		string(BehaviorTypeTrap),
+	})
 }
 
 func DefaultRange() *defaultproperty.DefaultIntCounterProperty {

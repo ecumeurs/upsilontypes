@@ -437,12 +437,19 @@ func (d DefaultStringProperty) Get() interface{} {
 	return d.value
 }
 
+func (d DefaultStringProperty) S() string {
+	return d.value
+}
+
 func (d *DefaultStringProperty) Set(p interface{}) {
-	val := p.(string)
+	d.SetS(p.(string))
+}
+
+func (d *DefaultStringProperty) SetS(s string) {
 	if len(d.AllowedValues) > 0 {
 		found := false
 		for _, v := range d.AllowedValues {
-			if v == val {
+			if v == s {
 				found = true
 				break
 			}
@@ -451,7 +458,7 @@ func (d *DefaultStringProperty) Set(p interface{}) {
 			return
 		}
 	}
-	d.value = val
+	d.value = s
 }
 
 func (d DefaultStringProperty) Increase() {

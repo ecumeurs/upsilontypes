@@ -68,6 +68,12 @@ type BoolProperty interface {
 	SetB(bool)
 }
 
+type StringProperty interface {
+	Property
+	S() string
+	SetS(string)
+}
+
 type IntCounterProperty interface {
 	IntProperty
 	GetValue() int

@@ -11,7 +11,7 @@ type Skill struct {
 	ID   uuid.UUID
 	Name string
 
-	Behavior def.BehaviorProperty
+	Behavior property.Property
 
 	Targeting map[string]property.Property
 	Costs     map[string]property.Property
@@ -24,7 +24,7 @@ func New() Skill {
 	return Skill{
 		ID:        uuid.New(),
 		Name:      "New Skill",
-		Behavior:  *def.DefaultBehavior(),
+		Behavior:  def.DefaultBehavior(),
 		Targeting: make(map[string]property.Property),
 		Costs:     make(map[string]property.Property),
 		Effect:    *effect.New(),
@@ -37,11 +37,35 @@ func NewSkill(name string, targeting, cost map[string]property.Property, effect 
 	return Skill{
 		ID:        uuid.New(),
 		Name:      name,
-		Behavior:  *def.DefaultBehavior(),
+		Behavior:  def.DefaultBehavior(),
 		Targeting: targeting,
 		Costs:     cost,
 		Effect:    effect,
 	}
+}
+// IsDirect
+func (s *Skill) IsDirect() bool {
+	return s.Behavior.Get().(string) == string(def.BehaviorTypeDirect)
+}
+
+// IsReaction
+func (s *Skill) IsReaction() bool {
+	return s.Behavior.Get().(string) == string(def.BehaviorTypeReaction)
+}
+
+// IsPassive
+func (s *Skill) IsPassive() bool {
+	return s.Behavior.Get().(string) == string(def.BehaviorTypePassive)
+}
+
+// IsCounter
+func (s *Skill) IsCounter() bool {
+	return s.Behavior.Get().(string) == string(def.BehaviorTypeCounter)
+}
+
+// IsTrap
+func (s *Skill) IsTrap() bool {
+	return s.Behavior.Get().(string) == string(def.BehaviorTypeTrap)
 }
 
 // HasProperty
@@ -115,29 +139,4 @@ func (s Skill) GetPropertyF(p interface{}) property.FloatProperty {
 // GetProperty
 func (s Skill) GetPropertyC(p interface{}) property.IntCounterProperty {
 	return s.GetProperty(p).(property.IntCounterProperty)
-}
-
-// IsDirect
-func (s *Skill) IsDirect() bool {
-	return s.Behavior.IsDirect()
-}
-
-// IsReaction
-func (s *Skill) IsReaction() bool {
-	return s.Behavior.IsReaction()
-}
-
-// IsPassive
-func (s *Skill) IsPassive() bool {
-	return s.Behavior.IsPassive()
-}
-
-// IsCounter
-func (s *Skill) IsCounter() bool {
-	return s.Behavior.IsCounter()
-}
-
-// IsTrap
-func (s *Skill) IsTrap() bool {
-	return s.Behavior.IsTrap()
 }
