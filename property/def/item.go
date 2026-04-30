@@ -51,66 +51,16 @@ const (
 	ItemTypeNone        ItemTypes = "Misc"
 )
 
-type ItemTypeProperty struct {
-	property.Property
-	ItemType            ItemTypes
-	minInformationLevel property.InformationLevel
-}
-
-// MakeItemTypeProperty
-func MakeItemType(it ItemTypes, minInfoLevel property.InformationLevel) *ItemTypeProperty {
-	return &ItemTypeProperty{
-		ItemType:            it,
-		minInformationLevel: minInfoLevel,
-	}
-}
-
 // DefaultItemTypeProperty
-func DefaultItemType() *ItemTypeProperty {
-	return MakeItemType(ItemTypeNone, property.OwnController)
-}
-
-func (bh *ItemTypeProperty) Name(i property.InformationLevel) string {
-	if i >= bh.minInformationLevel {
-		return "ItemType"
-	}
-	return ""
-}
-
-func (bh *ItemTypeProperty) UserFriendlyGet(i property.InformationLevel) interface{} {
-	if i >= bh.minInformationLevel {
-		return bh.ItemType
-	}
-	return ItemTypeNone
-}
-
-func (bh *ItemTypeProperty) Get() interface{} {
-	return bh
-}
-
-func (bh *ItemTypeProperty) Set(p interface{}) {
-	// will be altered directly.
-}
-
-func (bh *ItemTypeProperty) Increase() {
-}
-
-func (bh *ItemTypeProperty) GetType() property.PropertyType {
-	return property.Item
-}
-
-func (bh *ItemTypeProperty) Duplicate() property.Property {
-	return &ItemTypeProperty{
-		ItemType: bh.ItemType,
-	}
-}
-
-func (bh *ItemTypeProperty) ApplyBuff(p property.Property) property.Property {
-	return bh.Duplicate() // property.Item can't be buffed.
-}
-
-func (bh *ItemTypeProperty) UnapplyBuff(p property.Property) property.Property {
-	return bh.Duplicate() // property.Item can't be buffed.
+func DefaultItemType() *defaultproperty.DefaultStringProperty {
+	return defaultproperty.MakeValidatedStringProperty(property.ItemType, string(ItemTypeNone), property.OwnController, property.Item, []string{
+		string(ItemTypeWearable),
+		string(ItemTypeConsumable),
+		string(ItemTypeUsable),
+		string(ItemTypeThrowable),
+		string(ItemTypeAmmunitions),
+		string(ItemTypeNone),
+	})
 }
 
 // 	Effect           ItemProperties = "Effect"           // Absence means nil: No effect. Effects are Skills. (except None)
@@ -191,56 +141,15 @@ const (
 	TwoHandedRanged WeaponTypes = "Two-Handed Ranged"
 )
 
-type WeaponTypeProperty struct {
-	property.Property
-	WeaponType WeaponTypes
-}
-
-// MakeWeaponTypeProperty
-func MakeWeaponTypeProperty(wt WeaponTypes) *WeaponTypeProperty {
-	return &WeaponTypeProperty{
-		WeaponType: wt,
-	}
-}
-
 // DefaultWeaponTypeProperty
-func DefaultWeaponTypeProperty() *WeaponTypeProperty {
-	return MakeWeaponTypeProperty(NoWeapon)
-}
-
-func (bh *WeaponTypeProperty) Name(i property.InformationLevel) string {
-	return "WeaponType"
-}
-
-func (bh *WeaponTypeProperty) UserFriendlyGet(i property.InformationLevel) interface{} {
-	return bh.WeaponType
-}
-
-func (bh *WeaponTypeProperty) Get() interface{} {
-	return bh.WeaponType
-}
-
-func (bh *WeaponTypeProperty) Set(p interface{}) {
-}
-
-func (bh *WeaponTypeProperty) Increase() {
-}
-
-func (bh *WeaponTypeProperty) GetType() property.PropertyType {
-	return property.Item
-}
-
-func (bh *WeaponTypeProperty) Duplicate() property.Property {
-	return &WeaponTypeProperty{
-		WeaponType: bh.WeaponType,
-	}
-}
-
-func (bh *WeaponTypeProperty) ApplyBuff(p property.Property) property.Property {
-	return bh.Duplicate() // property.Item can't be buffed.
-}
-func (bh *WeaponTypeProperty) UnapplyBuff(p property.Property) property.Property {
-	return bh.Duplicate() // property.Item can't be buffed.
+func DefaultWeaponTypeProperty() *defaultproperty.DefaultStringProperty {
+	return defaultproperty.MakeValidatedStringProperty(property.WeaponType, string(NoWeapon), property.Public, property.Item, []string{
+		string(NoWeapon),
+		string(OneHandedMelee),
+		string(TwoHandedMelee),
+		string(OneHandedRanged),
+		string(TwoHandedRanged),
+	})
 }
 
 //ArmorType        ItemProperties = "ArmorType"        // Absence means 0: no armor type (only for Wearable)
@@ -259,56 +168,19 @@ const (
 	RingSlot  ArmorTypes = "Ring"
 )
 
-type ArmorTypeProperty struct {
-	property.Property
-	ArmorType ArmorTypes
-}
-
-// MakeArmorTypeProperty
-func MakeArmorTypeProperty(at ArmorTypes) *ArmorTypeProperty {
-	return &ArmorTypeProperty{
-		ArmorType: at,
-	}
-}
-
 // DefaultArmorTypeProperty
-func DefaultArmorTypeProperty() *ArmorTypeProperty {
-	return MakeArmorTypeProperty(NoArmor)
-}
-
-func (bh *ArmorTypeProperty) Name(i property.InformationLevel) string {
-	return "ArmorType"
-}
-
-func (bh *ArmorTypeProperty) UserFriendlyGet(i property.InformationLevel) interface{} {
-	return bh.ArmorType
-}
-
-func (bh *ArmorTypeProperty) Get() interface{} {
-	return bh.ArmorType
-}
-
-func (bh *ArmorTypeProperty) Set(p interface{}) {
-}
-
-func (bh *ArmorTypeProperty) Increase() {
-}
-
-func (bh *ArmorTypeProperty) GetType() property.PropertyType {
-	return property.Item
-}
-
-func (bh *ArmorTypeProperty) Duplicate() property.Property {
-	return &ArmorTypeProperty{
-		ArmorType: bh.ArmorType,
-	}
-}
-
-func (bh *ArmorTypeProperty) ApplyBuff(p property.Property) property.Property {
-	return bh.Duplicate() // property.Item can't be buffed.
-}
-func (bh *ArmorTypeProperty) UnapplyBuff(p property.Property) property.Property {
-	return bh.Duplicate() // property.Item can't be buffed.
+func DefaultArmorTypeProperty() *defaultproperty.DefaultStringProperty {
+	return defaultproperty.MakeValidatedStringProperty(property.ArmorType, string(NoArmor), property.Public, property.Item, []string{
+		string(NoArmor),
+		string(HeadSlot),
+		string(BodySlot),
+		string(HandsSlot),
+		string(LegsSlot),
+		string(FeetSlot),
+		string(BeltSlot),
+		string(NeckSlot),
+		string(RingSlot),
+	})
 }
 
 //ToolType         ItemProperties = "ToolType"         // Absence means 0: no tool type (only for Wearable)
@@ -320,57 +192,12 @@ const (
 	SomeTool ToolTypes = "SomeTool"
 )
 
-type ToolTypeProperty struct {
-	property.Property
-	ToolType ToolTypes
-}
-
-// MakeToolTypeProperty
-func MakeToolTypeProperty(tt ToolTypes) *ToolTypeProperty {
-	return &ToolTypeProperty{
-		ToolType: tt,
-	}
-}
-
 // DefaultToolTypeProperty
-func DefaultToolTypeProperty() *ToolTypeProperty {
-	return MakeToolTypeProperty(NoTool)
-}
-
-func (bh *ToolTypeProperty) Name(i property.InformationLevel) string {
-	return "ToolType"
-}
-
-func (bh *ToolTypeProperty) UserFriendlyGet(i property.InformationLevel) interface{} {
-	return bh.ToolType
-}
-
-func (bh *ToolTypeProperty) Get() interface{} {
-	return bh.ToolType
-}
-
-func (bh *ToolTypeProperty) Set(p interface{}) {
-}
-
-func (bh *ToolTypeProperty) Increase() {
-}
-
-func (bh *ToolTypeProperty) GetType() property.PropertyType {
-	return property.Item
-}
-
-func (bh *ToolTypeProperty) Duplicate() property.Property {
-	return &ToolTypeProperty{
-		ToolType: bh.ToolType,
-	}
-}
-
-func (bh *ToolTypeProperty) ApplyBuff(p property.Property) property.Property {
-	return bh.Duplicate() // property.Item can't be buffed.
-}
-
-func (bh *ToolTypeProperty) UnapplyBuff(p property.Property) property.Property {
-	return bh.Duplicate() // property.Item can't be buffed.
+func DefaultToolTypeProperty() *defaultproperty.DefaultStringProperty {
+	return defaultproperty.MakeValidatedStringProperty(property.ToolType, string(NoTool), property.Public, property.Item, []string{
+		string(NoTool),
+		string(SomeTool),
+	})
 }
 
 func ItemProperty(name property.ItemProperties) property.Property {
