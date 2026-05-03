@@ -1,6 +1,8 @@
 package skillgenerator
 
 import (
+	"fmt"
+
 	"github.com/ecumeurs/upsilontypes/entity/skill"
 	"github.com/ecumeurs/upsilontypes/entity/skill/skillweight"
 	"github.com/ecumeurs/upsilontypes/property"
@@ -8,93 +10,163 @@ import (
 	"github.com/ecumeurs/upsilontools/tools"
 )
 
-var propertiesTargetingRandomizers = []func() property.Property{
-	func() property.Property {
-		return defaultproperty.MakeIntProperty(property.Accuracy, tools.RandomInt(50, 150), property.Public, property.Skill)
-	},
+// gradeBand maps grade name to [pswLo, pswHi, secondaryChancePct].
+var gradeBand = map[string][3]int{
+	"I":   {60, 150, 25},
+	"II":  {151, 300, 50},
+	"III": {301, 500, 65},
+	"IV":  {501, 750, 75},
+	"V":   {751, 1000, 85},
 }
 
-var propertiesEffectRandomizers = []func() property.Property{
-	func() property.Property {
-		return defaultproperty.MakeIntProperty(property.Damage, tools.RandomInt(50, 200), property.Public, property.Skill)
-	},
-	func() property.Property {
-		return defaultproperty.MakeIntProperty(property.Heal, tools.RandomInt(50, 150), property.Public, property.Skill)
-	},
-	func() property.Property {
-		return defaultproperty.MakeIntProperty(property.ShieldPower, tools.RandomInt(10, 50), property.Public, property.Skill)
-	},
+// GenerateRequest parameterises skill generation.
+type GenerateRequest struct {
+	TargetGrade string   // "I"…"V"; empty defaults to "I"
+	AllowedTags []string // empty = any category
+	ForbidTags  []string // exclude categories
 }
 
-var propertiesCostRandomizers = []func() property.Property{
-	func() property.Property {
-		return defaultproperty.MakeIntCounterProperty(property.Cooldown, 0, tools.RandomInt(1, 5), property.Public, property.Skill)
-	},
-	func() property.Property {
-		return defaultproperty.MakeIntProperty(property.HPLeech, tools.RandomInt(1, 10), property.Public, property.Skill)
-	},
-	func() property.Property {
-		return defaultproperty.MakeIntProperty(property.MPLeech, tools.RandomInt(1, 10), property.Public, property.Skill)
-	},
-	func() property.Property {
-		return defaultproperty.MakeIntProperty(property.SPLeech, tools.RandomInt(1, 10), property.Public, property.Skill)
-	},
+var allProducerTags = []string{
+	"melee", "ranged", "aoe", "heal", "shield",
+	"buff", "debuff", "dot", "stun", "trap",
+	"counter", "reaction", "passive", "mobility",
 }
 
+type producerFn func(targetPSW int) skill.Skill
+
+var producers = map[string]producerFn{
+	"melee":    produceMelee,
+	"ranged":   produceRanged,
+	"aoe":      produceAOE,
+	"heal":     produceHeal,
+	"shield":   produceShield,
+	"buff":     produceBuff,
+	"debuff":   produceDebuff,
+	"dot":      produceDot,
+	"stun":     produceStun,
+	"trap":     produceTrap,
+	"counter":  produceCounter,
+	"reaction": produceReaction,
+	"passive":  producePassive,
+	"mobility": produceMobility,
+}
+
+type layerFn func(sk *skill.Skill, budget int)
+
+var secondaryLayers = map[string]layerFn{
+	"dot":    layerDot,
+	"aoe":    layerAOE,
+	"stun":   layerStun,
+	"crit":   layerCrit,
+	"debuff": layerDebuff,
+	"buff":   layerBuff,
+}
+
+// Generate returns (skill, orderedTags, error).
+// Replaces GenerateRandomSkill(); kept as alias: Generate(GenerateRequest{TargetGrade:"I"}).
+func Generate(req GenerateRequest) (skill.Skill, []string, error) {
+	grade := req.TargetGrade
+	if grade == "" {
+		grade = "I"
+	}
+	band, ok := gradeBand[grade]
+	if !ok {
+		return skill.Skill{}, nil, fmt.Errorf("unknown grade: %s", grade)
+	}
+
+	pswLo, pswHi, secondaryPct := band[0], band[1], band[2]
+	// Use a conservative inner range so that producer rounding (floor/ceil, ±14)
+	// never produces PSW outside [pswLo, pswHi].
+	targetLo := pswLo + 15
+	targetHi := pswHi - 14
+	if targetLo > targetHi {
+		targetLo = pswLo
+		targetHi = pswHi
+	}
+	targetPSW := tools.RandomInt(targetLo, targetHi+1)
+
+	allowed := buildAllowedList(req.AllowedTags, req.ForbidTags)
+	if len(allowed) == 0 {
+		return skill.Skill{}, nil, fmt.Errorf("no allowed producers after applying ForbidTags")
+	}
+
+	primaryTag := allowed[tools.RandomInt(0, len(allowed))]
+	produceFn, ok := producers[primaryTag]
+	if !ok {
+		return skill.Skill{}, nil, fmt.Errorf("no producer for tag: %s", primaryTag)
+	}
+
+	sk := produceFn(targetPSW)
+
+	// Secondary layer
+	if tools.RandomInt(0, 100) < secondaryPct {
+		pSW, _, _ := skillweight.Calculate(sk)
+		remaining := pswHi - pSW
+		if remaining >= 30 {
+			candidates := secondaryLayerCandidates(primaryTag)
+			if len(candidates) > 0 {
+				secTag := candidates[tools.RandomInt(0, len(candidates))]
+				if lFn, ok := secondaryLayers[secTag]; ok {
+					lFn(&sk, remaining)
+				}
+			}
+		}
+	}
+
+	applyDelayCloser(&sk)
+
+	tags := Classify(sk)
+	if len(tags) > 0 {
+		sk.Name = Name(tags[0], tags[1:], grade)
+	}
+
+	return sk, tags, nil
+}
+
+// GenerateRandomSkill is kept for backwards compatibility.
 func GenerateRandomSkill() skill.Skill {
-	sk := skill.New()
-
-	for _, v := range propertiesTargetingRandomizers {
-		if tools.RandomInt(0, 100) > 50 {
-			sk.Targeting[v().Name(property.GameMaster)] = v()
-		}
-	}
-	for len(sk.Effect.Properties) == 0 {
-		for _, v := range propertiesEffectRandomizers {
-			if tools.RandomInt(0, 100) > 50 {
-				skp := v()
-				sk.Effect.Properties = append(sk.Effect.Properties, skp)
-				sk.Name = sk.Effect.Properties[0].Name(property.GameMaster)
-				break // only one effect for now.
-			}
-		}
-	}
-	
-	// Add some random costs
-	for _, v := range propertiesCostRandomizers {
-		if tools.RandomInt(0, 100) > 50 {
-			skp := v()
-			sk.Costs[skp.Name(property.GameMaster)] = skp
-		}
-	}
-
-	// Balance skill using Skill Weight
-	_, _, netSW := skillweight.Calculate(sk)
-	
-	currentDelay := sk.GetPropertyC(property.Delay).GetMaxValue()
-	newDelay := currentDelay + netSW
-	if newDelay < 0 {
-		extraDamage := -newDelay
-		
-		damageVal := sk.GetPropertyI(property.Damage).I()
-		
-		var damageProp property.IntProperty
-		for _, p := range sk.Effect.Properties {
-			if p.Name(property.GameMaster) == property.Damage.String() {
-				damageProp = p.(property.IntProperty)
-				break
-			}
-		}
-		if damageProp != nil {
-			damageProp.SetI(damageProp.I() + extraDamage)
-		} else {
-			sk.Effect.Properties = append(sk.Effect.Properties, defaultproperty.MakeIntProperty(property.Damage, damageVal + extraDamage, property.Public, property.Skill))
-		}
-		
-		newDelay = 0
-	}
-	
-	sk.Costs[property.Delay.String()] = defaultproperty.MakeIntCounterProperty(property.Delay, 0, newDelay, property.Public, property.Skill)
-
+	sk, _, _ := Generate(GenerateRequest{TargetGrade: "I"})
 	return sk
+}
+
+func buildAllowedList(allowed, forbid []string) []string {
+	forbidSet := make(map[string]bool, len(forbid))
+	for _, t := range forbid {
+		forbidSet[t] = true
+	}
+	source := allProducerTags
+	if len(allowed) > 0 {
+		source = allowed
+	}
+	result := make([]string, 0, len(source))
+	for _, t := range source {
+		if !forbidSet[t] {
+			result = append(result, t)
+		}
+	}
+	return result
+}
+
+func applyDelayCloser(sk *skill.Skill) {
+	// Zero Delay first so the calculation below reflects only other costs.
+	sk.Costs[property.Delay.String()] = defaultproperty.MakeIntCounterProperty(
+		property.Delay, 0, 0, property.Public, property.Skill)
+	pSW, nSW, _ := skillweight.Calculate(*sk)
+	// netSW is now pSW + all non-Delay costs; set Delay to absorb the remainder.
+	delay := pSW + nSW
+	if delay < 0 {
+		delay = 0
+	}
+	sk.Costs[property.Delay.String()] = defaultproperty.MakeIntCounterProperty(
+		property.Delay, 0, delay, property.Public, property.Skill)
+}
+
+func secondaryLayerCandidates(primaryTag string) []string {
+	result := make([]string, 0, len(secondaryLayers))
+	for tag := range secondaryLayers {
+		if tag != primaryTag {
+			result = append(result, tag)
+		}
+	}
+	return result
 }

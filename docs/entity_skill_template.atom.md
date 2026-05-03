@@ -4,8 +4,8 @@ status: STABLE
 layer: ARCHITECTURE
 version: 2.0
 dependents:
-  - [[api_skill_template_admin_crud]]
-  - [[api_skill_template_browse]]
+  - [[upsilonapi:api_skill_template_admin_crud]]
+  - [[upsilonapi:api_skill_template_browse]]
   - [[entity_character_skill_inventory]]
 type: ENTITY
 priority: 5

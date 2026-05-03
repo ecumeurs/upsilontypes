@@ -4,7 +4,7 @@ status: STABLE
 parents:
   - [[entity_character_skill_inventory]]
 dependents:
-  - [[api_character_skill_inventory]]
+  - [[upsilonapi:api_character_skill_inventory]]
   - [[entity_character_skill_inventory]]
 priority: 5
 layer: ARCHITECTURE
