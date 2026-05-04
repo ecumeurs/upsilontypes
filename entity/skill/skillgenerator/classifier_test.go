@@ -1,6 +1,6 @@
 package skillgenerator
 
-// @test-link [[shared:req_skill_generation_overhaul]]
+// @test-link [[shared:req_skill_generation]]
 
 // TODO: uncomment and implement once classifier.go is written.
 //

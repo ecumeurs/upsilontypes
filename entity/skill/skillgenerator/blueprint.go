@@ -21,13 +21,40 @@ func newBlueprint() *blueprint {
 	p := def.DefaultTargetingMechanics()
 	p.SetS(string(def.TargetingMechanicsLOS))
 	bp.sk.Targeting[property.TargetingMechanics.String()] = p
+
+	// Explicitly initialize critical properties to 0 to avoid inheriting non-zero engine defaults.
+	bp.addDamage(0)
+	bp.setCooldown(0)
+	// Delay is handled by applyDelayCloser but initialize for safety.
+	bp.sk.Costs[property.Delay.String()] = defaultproperty.MakeIntCounterProperty(
+		property.Delay, 0, 0, property.Public, property.Skill)
+
 	return bp
 }
 
+func (b *blueprint) setEffectProperty(p property.SkillProperties, val int, counter bool) {
+	pstr := p.String()
+	var newP property.Property
+	if counter {
+		newP = defaultproperty.MakeIntCounterProperty(p, 0, val, property.Public, property.Skill)
+	} else {
+		newP = defaultproperty.MakeIntProperty(p, val, property.Public, property.Skill)
+	}
+
+	for i, v := range b.sk.Effect.Properties {
+		if v.Name(property.GameMaster) == pstr {
+			b.sk.Effect.Properties[i] = newP
+			return
+		}
+	}
+	b.sk.Effect.Properties = append(b.sk.Effect.Properties, newP)
+}
+
 func (b *blueprint) addDamage(dmg int) *blueprint {
-	// Always set explicitly — absence defaults to 100 in skillweight, which inflates PSW.
-	b.sk.Effect.Properties = append(b.sk.Effect.Properties,
-		defaultproperty.MakeIntProperty(property.Damage, dmg, property.Public, property.Skill))
+	if dmg < 0 {
+		dmg = 0
+	}
+	b.setEffectProperty(property.Damage, dmg, false)
 	return b
 }
 
@@ -35,8 +62,7 @@ func (b *blueprint) addHeal(heal int) *blueprint {
 	if heal <= 0 {
 		return b
 	}
-	b.sk.Effect.Properties = append(b.sk.Effect.Properties,
-		defaultproperty.MakeIntProperty(property.Heal, heal, property.Public, property.Skill))
+	b.setEffectProperty(property.Heal, heal, false)
 	return b
 }
 
@@ -44,8 +70,7 @@ func (b *blueprint) addShieldPower(sp int) *blueprint {
 	if sp <= 0 {
 		return b
 	}
-	b.sk.Effect.Properties = append(b.sk.Effect.Properties,
-		defaultproperty.MakeIntProperty(property.ShieldPower, sp, property.Public, property.Skill))
+	b.setEffectProperty(property.ShieldPower, sp, false)
 	return b
 }
 
@@ -53,8 +78,7 @@ func (b *blueprint) addStunChance(sc int) *blueprint {
 	if sc <= 0 {
 		return b
 	}
-	b.sk.Effect.Properties = append(b.sk.Effect.Properties,
-		defaultproperty.MakeIntProperty(property.StunChance, sc, property.Public, property.Skill))
+	b.setEffectProperty(property.StunChance, sc, false)
 	return b
 }
 
@@ -65,8 +89,7 @@ func (b *blueprint) addCritChance(cc int) *blueprint {
 	if cc > 100 {
 		cc = 100
 	}
-	b.sk.Effect.Properties = append(b.sk.Effect.Properties,
-		defaultproperty.MakeIntProperty(property.CriticalChance, cc, property.Public, property.Skill))
+	b.setEffectProperty(property.CriticalChance, cc, false)
 	return b
 }
 
@@ -74,8 +97,7 @@ func (b *blueprint) addPoisonPower(pp int) *blueprint {
 	if pp <= 0 {
 		return b
 	}
-	b.sk.Effect.Properties = append(b.sk.Effect.Properties,
-		defaultproperty.MakeIntProperty(property.PoisonPower, pp, property.Public, property.Skill))
+	b.setEffectProperty(property.PoisonPower, pp, false)
 	return b
 }
 
@@ -83,8 +105,7 @@ func (b *blueprint) addDuration(turns int) *blueprint {
 	if turns <= 0 {
 		return b
 	}
-	b.sk.Effect.Properties = append(b.sk.Effect.Properties,
-		defaultproperty.MakeIntCounterProperty(property.Duration, 0, turns, property.Public, property.Skill))
+	b.setEffectProperty(property.Duration, turns, true)
 	return b
 }
 
@@ -126,8 +147,8 @@ func (b *blueprint) setBehavior(bt def.BehaviorType) *blueprint {
 
 // setCooldown adds a cooldown cost (reduces net SW but not PSW).
 func (b *blueprint) setCooldown(turns int) *blueprint {
-	if turns <= 0 {
-		return b
+	if turns < 0 {
+		turns = 0
 	}
 	b.sk.Costs[property.Cooldown.String()] =
 		defaultproperty.MakeIntCounterProperty(property.Cooldown, 0, turns, property.Public, property.Skill)
@@ -136,7 +157,7 @@ func (b *blueprint) setCooldown(turns int) *blueprint {
 
 // psw returns the current positive SW of the skill as built so far.
 func (b *blueprint) psw() int {
-	pSW, _, _ := skillweight.Calculate(b.sk)
+	pSW, _, _ := skillweight.Calculate(&b.sk)
 	return pSW
 }
 

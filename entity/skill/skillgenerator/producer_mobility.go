@@ -13,8 +13,12 @@ import (
 func produceMobility(targetPSW int) skill.Skill {
 	bp := newBlueprint()
 	bp.setTargetType(def.TargetTypeSelf)
-	bp.addDuration(3)
-	bp.addDamage(0)
+	bp.addDuration(3) // +40 PSW
+
+	targetPSW -= 40
+	if targetPSW < 0 {
+		targetPSW = 0
+	}
 
 	critPSW := targetPSW
 	if critPSW > 200 {
@@ -32,6 +36,7 @@ func produceMobility(targetPSW int) skill.Skill {
 	}
 
 	// Movement marker for the classifier (no PSW contribution).
+	// Use addMovement if it existed, but for now just use a safe set.
 	bp.sk.Effect.Properties = append(bp.sk.Effect.Properties,
 		defaultproperty.MakeIntProperty(property.Movement, 1, property.Public, property.Skill))
 

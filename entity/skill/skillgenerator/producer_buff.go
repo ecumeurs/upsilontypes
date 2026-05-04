@@ -10,8 +10,12 @@ import (
 func produceBuff(targetPSW int) skill.Skill {
 	bp := newBlueprint()
 	bp.setTargetType(def.TargetTypeSelf)
-	bp.addDuration(3)
-	bp.addDamage(0)
+	bp.addDuration(3) // +40 PSW
+
+	targetPSW -= 40
+	if targetPSW < 0 {
+		targetPSW = 0
+	}
 
 	critPSW := targetPSW
 	if critPSW > 200 {
@@ -33,9 +37,11 @@ func produceBuff(targetPSW int) skill.Skill {
 
 // layerBuff adds Duration + CritChance to an existing skill (self-targeting secondary).
 func layerBuff(sk *skill.Skill, budget int) {
-	if budget < 10 {
+	durationWeight := 20 // for duration 2
+	if budget < durationWeight+10 {
 		return
 	}
+	budget -= durationWeight
 	critChance := budget / 2
 	if critChance > 50 {
 		critChance = 50

@@ -18,7 +18,6 @@ func produceHeal(targetPSW int) skill.Skill {
 	// Round to nearest multiple of 10 to keep PSW exact.
 	healVal = (healVal / 10) * 10
 
-	bp.addDamage(0)
 	bp.addHeal(healVal)
 	return bp.build()
 }

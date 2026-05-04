@@ -15,7 +15,6 @@ func produceDot(targetPSW int) skill.Skill {
 	if pp < 1 {
 		pp = 1
 	}
-	bp.addDamage(0)
 	bp.addPoisonPower(pp)
 	return bp.build()
 }

@@ -21,9 +21,9 @@ var gradeBand = map[string][3]int{
 
 // GenerateRequest parameterises skill generation.
 type GenerateRequest struct {
-	TargetGrade string   // "I"…"V"; empty defaults to "I"
-	AllowedTags []string // empty = any category
-	ForbidTags  []string // exclude categories
+	TargetGrade string   `json:"grade"`        // "I"…"V"; empty defaults to "I"
+	AllowedTags []string `json:"allowed_tags"` // empty = any category
+	ForbidTags  []string `json:"forbid_tags"`  // exclude categories
 }
 
 var allProducerTags = []string{
@@ -100,7 +100,7 @@ func Generate(req GenerateRequest) (skill.Skill, []string, error) {
 
 	// Secondary layer
 	if tools.RandomInt(0, 100) < secondaryPct {
-		pSW, _, _ := skillweight.Calculate(sk)
+		pSW, _, _ := skillweight.Calculate(&sk)
 		remaining := pswHi - pSW
 		if remaining >= 30 {
 			candidates := secondaryLayerCandidates(primaryTag)
@@ -151,7 +151,7 @@ func applyDelayCloser(sk *skill.Skill) {
 	// Zero Delay first so the calculation below reflects only other costs.
 	sk.Costs[property.Delay.String()] = defaultproperty.MakeIntCounterProperty(
 		property.Delay, 0, 0, property.Public, property.Skill)
-	pSW, nSW, _ := skillweight.Calculate(*sk)
+	pSW, nSW, _ := skillweight.Calculate(sk)
 	// netSW is now pSW + all non-Delay costs; set Delay to absorb the remainder.
 	delay := pSW + nSW
 	if delay < 0 {

@@ -9,7 +9,12 @@ import (
 // produceCounter builds a counter skill: Behavior=Counter, Damage or ShieldPower.
 func produceCounter(targetPSW int) skill.Skill {
 	bp := newBlueprint()
-	bp.setBehavior(def.BehaviorTypeCounter)
+	bp.setBehavior(def.BehaviorTypeCounter) // +30 SW
+
+	targetPSW -= 30
+	if targetPSW < 0 {
+		targetPSW = 0
+	}
 
 	if tools.RandomInt(0, 100) < 50 {
 		// Counter-damage

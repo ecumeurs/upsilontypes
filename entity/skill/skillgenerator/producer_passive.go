@@ -10,9 +10,13 @@ import (
 // CritChance is capped at 100% (200 PSW); ShieldPower fills any remaining budget.
 func producePassive(targetPSW int) skill.Skill {
 	bp := newBlueprint()
-	bp.setBehavior(def.BehaviorTypePassive)
+	bp.setBehavior(def.BehaviorTypePassive) // +50 SW
 	bp.setTargetType(def.TargetTypeSelf)
-	bp.addDamage(0)
+
+	targetPSW -= 50
+	if targetPSW < 0 {
+		targetPSW = 0
+	}
 
 	if tools.RandomInt(0, 100) < 50 {
 		// CritChance path (capped at 200 PSW) + ShieldPower overflow

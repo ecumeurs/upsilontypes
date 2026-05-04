@@ -9,7 +9,12 @@ import (
 // produceReaction builds a reaction skill: Behavior=Reaction, Damage or Heal.
 func produceReaction(targetPSW int) skill.Skill {
 	bp := newBlueprint()
-	bp.setBehavior(def.BehaviorTypeReaction)
+	bp.setBehavior(def.BehaviorTypeReaction) // +30 SW
+
+	targetPSW -= 30
+	if targetPSW < 0 {
+		targetPSW = 0
+	}
 
 	if tools.RandomInt(0, 100) < 50 {
 		bp.setTargetType(def.TargetTypeEnemyOnly)

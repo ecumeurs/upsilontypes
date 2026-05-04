@@ -8,7 +8,7 @@ import (
 )
 
 // Calculate computes the positive, negative, and net Skill Weight (SW) for a given skill.
-func Calculate(s skill.Skill) (positiveSW int, negativeSW int, netSW int) {
+func Calculate(s *skill.Skill) (positiveSW int, negativeSW int, netSW int) {
 	positiveSW = 0
 	negativeSW = 0
 
@@ -73,6 +73,20 @@ func Calculate(s skill.Skill) (positiveSW int, negativeSW int, netSW int) {
 	shieldPower := s.GetPropertyI(property.ShieldPower).I()
 	if shieldPower > 0 {
 		positiveSW += shieldPower * 10
+	}
+
+	// Duration: +20 SW per extra turn
+	durationProp := s.GetProperty(property.Duration)
+	if dp, ok := durationProp.(property.IntCounterProperty); ok {
+		if dp.GetMaxValue() > 1 {
+			positiveSW += (dp.GetMaxValue() - 1) * 20
+		}
+	}
+
+	// Critical Multiplier: +1 SW per 1% extra
+	critMult := s.GetPropertyI(property.CriticalMultiplier).I()
+	if critMult > 100 {
+		positiveSW += (critMult - 100)
 	}
 
 	// -- Payments (Negative SW) --

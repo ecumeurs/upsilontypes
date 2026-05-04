@@ -12,7 +12,7 @@ func TestGenerateRandomSkill(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		sk := GenerateRandomSkill()
 
-		pSW, nSW, netSW := skillweight.Calculate(sk)
+		pSW, nSW, netSW := skillweight.Calculate(&sk)
 
 		// 1. Verify net SW = 0
 		if netSW != 0 {
@@ -33,7 +33,7 @@ func TestGenerateRandomSkill(t *testing.T) {
 	}
 }
 
-// @test-link [[shared:req_skill_generation_overhaul]]
+// @test-link [[shared:req_skill_generation]]
 
 var gradeBands = map[string][2]int{
 	"I": {60, 150}, "II": {151, 300}, "III": {301, 500}, "IV": {501, 750}, "V": {751, 9999},
@@ -46,7 +46,7 @@ func TestGenerate_GradeBand(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Generate grade %s: unexpected error: %v", grade, err)
 			}
-			pSW, _, netSW := skillweight.Calculate(sk)
+			pSW, _, netSW := skillweight.Calculate(&sk)
 			if netSW != 0 {
 				t.Errorf("Generate grade %s skill %d: netSW=%d (expected 0)", grade, i, netSW)
 			}

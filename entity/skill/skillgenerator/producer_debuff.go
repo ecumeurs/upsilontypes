@@ -10,7 +10,12 @@ import (
 func produceDebuff(targetPSW int) skill.Skill {
 	bp := newBlueprint()
 	bp.setTargetType(def.TargetTypeEnemyOnly)
-	bp.addDuration(3)
+	bp.addDuration(3) // +40 PSW
+
+	targetPSW -= 40
+	if targetPSW < 0 {
+		targetPSW = 0
+	}
 
 	pp := targetPSW / 15
 	if pp < 1 {
@@ -23,9 +28,11 @@ func produceDebuff(targetPSW int) skill.Skill {
 
 // layerDebuff adds PoisonPower + Duration to an existing enemy-targeted skill.
 func layerDebuff(sk *skill.Skill, budget int) {
-	if budget < 15 {
+	durationWeight := 20 // for duration 2
+	if budget < durationWeight+15 {
 		return
 	}
+	budget -= durationWeight
 	pp := budget / 15
 	if pp > 5 {
 		pp = 5
