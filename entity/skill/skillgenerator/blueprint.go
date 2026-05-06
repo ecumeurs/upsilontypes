@@ -10,6 +10,7 @@ import (
 )
 
 // blueprint builds a skill while tracking positive SW spend.
+// @spec-link [[mech_skill_generator_blueprint]]
 type blueprint struct {
 	sk skill.Skill
 }
@@ -43,6 +44,15 @@ func (b *blueprint) setEffectProperty(p property.SkillProperties, val int, count
 
 	for i, v := range b.sk.Effect.Properties {
 		if v.Name(property.GameMaster) == pstr {
+			if counter {
+				if _, ok := v.(property.IntCounterProperty); ok {
+					newP = defaultproperty.MakeIntCounterProperty(p, 0, val, property.Public, property.Skill)
+				}
+			} else {
+				if oldP, ok := v.(property.IntProperty); ok {
+					newP = defaultproperty.MakeIntProperty(p, oldP.I()+val, property.Public, property.Skill)
+				}
+			}
 			b.sk.Effect.Properties[i] = newP
 			return
 		}

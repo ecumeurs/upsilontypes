@@ -8,8 +8,8 @@ version: 2.0
 tags: [shop, items, catalog, iss-074]
 human_name: Shop Item Catalog Entity
 parents:
-  - [[upsilonbattle:mec_credit_spending_shop]]
   - [[upsilonapi:domain_credit_economy]]
+  - [[upsilonbattle:mec_credit_spending_shop]]
 dependents:
   - [[upsilonapi:api_shop_browse]]
   - [[upsilonapi:api_shop_item_admin_crud]]

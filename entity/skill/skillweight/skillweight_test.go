@@ -19,7 +19,7 @@ func TestSkillWeightCalculator(t *testing.T) {
 	// Set Range to 3 (+20 SW)
 	s1.Targeting[property.Range.String()] = defaultproperty.MakeIntCounterProperty(property.Range, 1, 3, property.FriendlyController, property.Skill)
 
-	pSW, nSW, _ := Calculate(s1)
+	pSW, nSW, _ := Calculate(&s1)
 
 	// Note: skill.New() comes with default TargetAnywhere (+40 SW)
 	// So expected Positive SW = 100 (Damage) + 50 (Crit) + 20 (Range) + 40 (TargetAnywhere default) = 210

@@ -14,6 +14,17 @@ func Calculate(s *skill.Skill) (positiveSW int, negativeSW int, netSW int) {
 
 	// -- Benefits (Positive SW) --
 	
+	// Behavior: Trap(+40), Counter(+30), Passive(+50), Reaction(+30), Direct(+0)
+	if s.IsReaction() {
+		positiveSW += 30
+	} else if s.IsPassive() {
+		positiveSW += 50
+	} else if s.IsCounter() {
+		positiveSW += 30
+	} else if s.IsTrap() {
+		positiveSW += 40
+	}
+	
 	// Damage Multiplier: +10 SW per 10% (100% damage = +100 SW)
 	damageProp := s.GetPropertyI(property.Damage).I()
 	if damageProp > 0 {

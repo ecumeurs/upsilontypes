@@ -20,6 +20,7 @@ var gradeBand = map[string][3]int{
 }
 
 // GenerateRequest parameterises skill generation.
+// @spec-link [[api_skill_generation]]
 type GenerateRequest struct {
 	TargetGrade string   `json:"grade"`        // "I"…"V"; empty defaults to "I"
 	AllowedTags []string `json:"allowed_tags"` // empty = any category
@@ -64,6 +65,7 @@ var secondaryLayers = map[string]layerFn{
 
 // Generate returns (skill, orderedTags, error).
 // Replaces GenerateRandomSkill(); kept as alias: Generate(GenerateRequest{TargetGrade:"I"}).
+// @spec-link [[mech_skill_generator_core]]
 func Generate(req GenerateRequest) (skill.Skill, []string, error) {
 	grade := req.TargetGrade
 	if grade == "" {

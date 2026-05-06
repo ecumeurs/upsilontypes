@@ -8,7 +8,7 @@ import (
 
 // Classify derives the ordered tag list for a skill.
 // Order: behavior tag → effect family → delivery → modifiers.
-// @spec-link [[shared:req_skill_generation]]
+// @spec-link [[mech_skill_classifier]]
 func Classify(sk skill.Skill) []string {
 	tags := make([]string, 0, 4)
 
