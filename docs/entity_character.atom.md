@@ -7,7 +7,8 @@ version: 1.0
 status: STABLE
 priority: 5
 tags: []
-parents: []
+parents:
+  - [[shared:requirement_customer_player_profile]]
 dependents:
   - [[shared:rule_character_create_character]]
   - [[shared:rule_progression]]
