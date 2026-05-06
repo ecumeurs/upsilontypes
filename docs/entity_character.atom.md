@@ -9,6 +9,7 @@ priority: 5
 tags: []
 parents:
   - [[shared:requirement_customer_player_profile]]
+  - [[req_tech_debt_backlog]]
 dependents:
   - [[shared:rule_character_create_character]]
   - [[shared:rule_progression]]
