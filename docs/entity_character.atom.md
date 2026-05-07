@@ -8,8 +8,8 @@ status: STABLE
 priority: 5
 tags: []
 parents:
+  - [[shared:req_tech_debt_backlog]]
   - [[shared:requirement_customer_player_profile]]
-  - [[req_tech_debt_backlog]]
 dependents:
   - [[shared:rule_character_create_character]]
   - [[shared:rule_progression]]
