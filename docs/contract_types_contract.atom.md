@@ -20,7 +20,7 @@ Establish the stability and serialization requirements for the UpsilonTypes proj
 ## THE RULE / LOGIC
 - **Stability:** Changes to core types must be backwards compatible or strictly versioned to avoid breaking the multi-stack integration.
 - **Logic Isolation:** This project must contain only data structures and basic validation/serialization logic. No game mechanics.
-- **Serialization:** Types must be compatible with both JSON and binary serialization formats as required by `[[upsilonserializer]]`.
+- **Serialization:** Types must be compatible with both JSON and binary serialization formats.
 - **Traceability:** Every field in core entities must be linked to its corresponding specification atom.
 
 ## TECHNICAL INTERFACE
