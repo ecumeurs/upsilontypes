@@ -1,0 +1,7 @@
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+pipeline_output/
+atd_trace.log
