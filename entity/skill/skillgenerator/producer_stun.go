@@ -5,8 +5,9 @@ import (
 	"github.com/ecumeurs/upsilontypes/property/def"
 )
 
-// produceStun builds a stun skill: StunChance + Damage, EnemyOnly.
+// produceStun builds a stun skill: StunChance + StunPower + Damage, EnemyOnly.
 // StunChance is capped at 100% (200 PSW); remaining budget fills Damage.
+// Both StunChance AND StunPower must be set for the effect applicator to apply stun.
 func produceStun(targetPSW int) skill.Skill {
 	bp := newBlueprint()
 	bp.setRange(1)
@@ -23,11 +24,13 @@ func produceStun(targetPSW int) skill.Skill {
 		stunChance = 5
 	}
 	bp.addStunChance(stunChance)
+	// StunPower must be paired with StunChance for the effect to apply (ISS-095).
+	bp.addStunPower(stunChance / 5)
 	bp.addDamage(dmgPSW)
 	return bp.build()
 }
 
-// layerStun adds StunChance to an existing skill within the given budget.
+// layerStun adds StunChance + StunPower to an existing skill within the given budget.
 func layerStun(sk *skill.Skill, budget int) {
 	if budget < 4 {
 		return
@@ -38,5 +41,7 @@ func layerStun(sk *skill.Skill, budget int) {
 	}
 	bp := &blueprint{sk: *sk}
 	bp.addStunChance(stunChance)
+	// StunPower must be paired with StunChance for the effect to apply (ISS-095).
+	bp.addStunPower(stunChance / 5)
 	*sk = bp.sk
 }

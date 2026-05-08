@@ -21,6 +21,8 @@ func produceMelee(targetPSW int) skill.Skill {
 			stunChance = 1
 		}
 		bp.addStunChance(stunChance)
+		// StunPower must be paired with StunChance for the effect to apply (ISS-095).
+		bp.addStunPower(stunChance / 5)
 		bp.addDamage(targetPSW - stunChance*2)
 	} else {
 		bp.addDamage(targetPSW)

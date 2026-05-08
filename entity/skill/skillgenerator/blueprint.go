@@ -92,6 +92,14 @@ func (b *blueprint) addStunChance(sc int) *blueprint {
 	return b
 }
 
+func (b *blueprint) addStunPower(sp int) *blueprint {
+	if sp <= 0 {
+		return b
+	}
+	b.setEffectProperty(property.StunPower, sp, false)
+	return b
+}
+
 func (b *blueprint) addCritChance(cc int) *blueprint {
 	if cc <= 0 {
 		return b
@@ -108,6 +116,17 @@ func (b *blueprint) addPoisonPower(pp int) *blueprint {
 		return b
 	}
 	b.setEffectProperty(property.PoisonPower, pp, false)
+	return b
+}
+
+func (b *blueprint) addPoisonChance(pc int) *blueprint {
+	if pc <= 0 {
+		return b
+	}
+	if pc > 100 {
+		pc = 100
+	}
+	b.setEffectProperty(property.PoisonChance, pc, false)
 	return b
 }
 

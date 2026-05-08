@@ -30,26 +30,26 @@ type GenerateRequest struct {
 var allProducerTags = []string{
 	"melee", "ranged", "aoe", "heal", "shield",
 	"buff", "debuff", "dot", "stun", "trap",
-	"counter", "reaction", "passive", "mobility",
+	"passive",
+	// DISABLED: "counter", "reaction", "mobility" — engine does not implement
+	// trigger/activation systems for these behavior types yet (ISS-095 #6).
 }
 
 type producerFn func(targetPSW int) skill.Skill
 
 var producers = map[string]producerFn{
-	"melee":    produceMelee,
-	"ranged":   produceRanged,
-	"aoe":      produceAOE,
-	"heal":     produceHeal,
-	"shield":   produceShield,
-	"buff":     produceBuff,
-	"debuff":   produceDebuff,
-	"dot":      produceDot,
-	"stun":     produceStun,
-	"trap":     produceTrap,
-	"counter":  produceCounter,
-	"reaction": produceReaction,
-	"passive":  producePassive,
-	"mobility": produceMobility,
+	"melee":   produceMelee,
+	"ranged":  produceRanged,
+	"aoe":     produceAOE,
+	"heal":    produceHeal,
+	"shield":  produceShield,
+	"buff":    produceBuff,
+	"debuff":  produceDebuff,
+	"dot":     produceDot,
+	"stun":    produceStun,
+	"trap":    produceTrap,
+	"passive": producePassive,
+	// DISABLED: "counter", "reaction", "mobility" — pending engine support (ISS-095 #6).
 }
 
 type layerFn func(sk *skill.Skill, budget int)
