@@ -238,6 +238,27 @@ const (
 	TargetingMechanicsLOS      TargetingMechanicsType = "Line of Sight"
 )
 
+// TriggerType defines when a positional effect fires.
+func TriggerType(val property.TriggerTypeValue) *defaultproperty.DefaultStringProperty {
+	return defaultproperty.MakeValidatedStringProperty(property.TriggerType, string(val), property.FriendlyController, property.Skill, []string{
+		string(property.TriggerOnEnter),
+		string(property.TriggerOnExit),
+		string(property.TriggerOnStep),
+		string(property.TriggerOnTurn),
+		string(property.TriggerOnDeath),
+	})
+}
+
+// RemoveOnTrigger: if true, the positional effect is consumed after firing once.
+func RemoveOnTrigger(val bool) *defaultproperty.DefaultBoolProperty {
+	return defaultproperty.MakeBoolProperty(property.RemoveOnTrigger, val, property.FriendlyController, property.Skill)
+}
+
+// TriggerCount: how many times the effect can fire (0 = unlimited).
+func TriggerCount(val int) *defaultproperty.DefaultIntProperty {
+	return defaultproperty.MakeIntProperty(property.TriggerCount, val, property.FriendlyController, property.Skill)
+}
+
 // DefaultTargetingMechanicsProperty
 func DefaultTargetingMechanics() *defaultproperty.DefaultStringProperty {
 	return defaultproperty.MakeValidatedStringProperty(property.TargetingMechanics, string(TargetingMechanicsAnywhere), property.FriendlyController, property.Skill, []string{
@@ -298,6 +319,12 @@ func SkillProperty(ps property.SkillProperties) property.Property {
 		return SPLeech()
 	case property.MvtCost:
 		return MvtCost()
+	case property.TriggerType:
+		return TriggerType(property.TriggerOnEnter) // default
+	case property.RemoveOnTrigger:
+		return RemoveOnTrigger(true)
+	case property.TriggerCount:
+		return TriggerCount(1)
 	}
 	return nil
 }
