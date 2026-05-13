@@ -11,7 +11,6 @@ parents:
   - [[shared:req_skill_generation]]
 dependents:
   - [[upsilonbattle:mech_skill_name_generation]]
-  - [[api_skill_generation]]
   - [[mech_skill_classifier]]
   - [[mech_skill_generator_core]]
 ---
