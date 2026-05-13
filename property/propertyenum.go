@@ -38,8 +38,12 @@ const (
 	// Invisible: if true, the entity is not sent in client-facing state snapshots.
 	Invisible           EntityProperties = "Invisible"
 	// AIBehavior stores the slug for the automated behavior (e.g. "aggressive", "spooked").
-	// @spec-link [[mech_behavior_interface]]
+	// @spec-link [[mechanic_mech_behavior_layered]]
 	AIBehavior          EntityProperties = "AIBehavior"
+	// AIArchetype stores the archetype slug for controller-driven AI entities
+	// (e.g. "fighter", "ranger", "support", "sneak").
+	// @spec-link [[mec_ai_archetype_system]]
+	AIArchetype         EntityProperties = "AIArchetype"
 
 	// (counters) Absence means 0,0, can have overshield (when applied through healing and buffs...) Max shield is only used at initialisation of battle. Allowed to twice HP Max
 	Shield EntityProperties = "Shield"

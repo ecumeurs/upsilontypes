@@ -87,6 +87,10 @@ func AIBehavior() *defaultproperty.DefaultStringProperty {
 	return defaultproperty.MakeStringProperty(property.AIBehavior, "none", property.Public, property.Character)
 }
 
+func AIArchetype() *defaultproperty.DefaultStringProperty {
+	return defaultproperty.MakeStringProperty(property.AIArchetype, "", property.Public, property.Character)
+}
+
 // note: futher properties may be added per entity basis.
 func PropertiesForCharacter() []property.Property {
 	return []property.Property{
@@ -148,6 +152,8 @@ func EntityProperty(name property.EntityProperties) property.Property {
 		return Invisible()
 	case property.AIBehavior:
 		return AIBehavior()
+	case property.AIArchetype:
+		return AIArchetype()
 	}
 	return nil
 }
