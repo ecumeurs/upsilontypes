@@ -1,6 +1,10 @@
 package def
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
+
 	"github.com/ecumeurs/upsilontypes/property"
 	"github.com/ecumeurs/upsilontypes/property/defaultproperty"
 	"github.com/ecumeurs/upsilonmapdata/grid/position/pattern"
@@ -174,18 +178,50 @@ func (bh *ZoneProperty) Get() interface{} {
 	return bh
 }
 
+// Set parses a zone-pattern string and populates ZonePattern accordingly.
+// Accepted forms: "Single", "Neighbours", "Circle:N", "Square:N", "Line:N"
+// where N is a positive integer.
+// Crash-Early: panics on any unknown or malformed pattern string to prevent
+// silent AoE misconfiguration reaching the battle engine.
 func (bh *ZoneProperty) Set(p interface{}) {
-	if s, ok := p.(string); ok {
-		bh.PatternType = s
-		// Simple parser for standard patterns
-		if s == "Single" {
-			bh.ZonePattern = pattern.Single()
-		} else if s == "Neighbours" {
-			bh.ZonePattern = pattern.Neighbours()
-		} else {
-			// fallback to single if unknown
-			bh.ZonePattern = pattern.Single()
+	s, ok := p.(string)
+	if !ok {
+		panic(fmt.Sprintf("ZoneProperty.Set: expected string, got %T", p))
+	}
+	bh.PatternType = s
+
+	// Split on ":" to support parameterised forms like "Circle:3" or "Square:2".
+	parts := strings.SplitN(s, ":", 2)
+	name := parts[0]
+
+	// parseN extracts the integer parameter from parts[1].
+	// It panics if the parameter is missing or cannot be parsed as a positive integer.
+	parseN := func() int {
+		if len(parts) < 2 {
+			panic(fmt.Sprintf("ZoneProperty.Set: pattern %q requires an integer parameter (e.g. %s:3)", name, name))
 		}
+		n, err := strconv.Atoi(parts[1])
+		if err != nil || n <= 0 {
+			panic(fmt.Sprintf("ZoneProperty.Set: invalid parameter %q for pattern %q — must be a positive integer", parts[1], name))
+		}
+		return n
+	}
+
+	switch name {
+	case "Single":
+		bh.ZonePattern = pattern.Single()
+	case "Neighbours":
+		bh.ZonePattern = pattern.Neighbours()
+	case "Circle":
+		bh.ZonePattern = pattern.Circle(parseN())
+	case "Square":
+		n := parseN()
+		// Square:N maps to a symmetric cube with half-extent N on all axes.
+		bh.ZonePattern = pattern.Square(n, n, n)
+	case "Line":
+		bh.ZonePattern = pattern.Line(parseN())
+	default:
+		panic(fmt.Sprintf("ZoneProperty.Set: unknown zone pattern %q — valid patterns: Single, Neighbours, Circle:N, Square:N, Line:N", s))
 	}
 }
 
