@@ -6,7 +6,6 @@ parents:
   - [[entity_skill_template]]
   - [[rule_character_skill_slots]]
 dependents:
-  - [[upsilonapi:api_character_skill_inventory]]
   - [[rule_character_skill_slots]]
 priority: 5
 layer: ARCHITECTURE

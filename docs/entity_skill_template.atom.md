@@ -4,14 +4,13 @@ status: STABLE
 layer: ARCHITECTURE
 version: 2.0
 dependents:
-  - [[upsilonapi:api_skill_template_admin_crud]]
-  - [[upsilonapi:api_skill_template_browse]]
   - [[entity_character_skill_inventory]]
 type: ENTITY
 priority: 5
 tags: [skills, templates, catalog, iss-086]
 human_name: Skill Template Entity
-parents: []
+parents:
+  - [[req_tech_debt_backlog]]
 ---
 
 # New Atom

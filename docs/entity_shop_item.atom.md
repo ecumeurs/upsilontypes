@@ -10,10 +10,7 @@ human_name: Shop Item Catalog Entity
 parents:
   - [[upsilonapi:domain_credit_economy]]
   - [[upsilonbattle:mec_credit_spending_shop]]
-dependents:
-  - [[upsilonapi:api_shop_browse]]
-  - [[upsilonapi:api_shop_item_admin_crud]]
-  - [[upsilonbattle:entity_player_inventory]]
+dependents: []
 ---
 
 # New Atom

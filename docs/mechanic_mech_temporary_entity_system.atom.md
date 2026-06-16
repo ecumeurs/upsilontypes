@@ -1,10 +1,9 @@
 ---
 id: mechanic_mech_temporary_entity_system
 status: DRAFT
-parent: []
+parents:
+  - [[req_tech_debt_backlog]]
 dependents:
-  - [[upsilonbattle:mec_channeling_mechanic]]
-  - [[upsilonbattle:mec_expiration_controller]]
   - [[mec_cell_attached_effects]]
   - [[mec_effect_caster_tracking]]
 human_name: Temporary Entity System
