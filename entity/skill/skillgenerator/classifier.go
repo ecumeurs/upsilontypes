@@ -100,14 +100,11 @@ func Classify(sk skill.Skill) []string {
 		tags = append(tags, "instant")
 	}
 
-	// mobility: Self target + Movement in effects + Duration > 0
-	if targetType == string(def.TargetTypeSelf) && duration > 0 {
-		for _, p := range sk.Effect.Properties {
-			if p.Name(property.GameMaster) == string(property.Movement) {
-				tags = append(tags, "mobility")
-				break
-			}
-		}
+	// mobility: any skill that displaces a subject (RepositionDistance != 0), or the legacy
+	// Self + Duration + Movement-marker form. A skill is mobility whenever a position changes.
+	// @spec-link [[mech_movement_reposition]]
+	if isMobility(sk, targetType, duration) {
+		tags = append(tags, "mobility")
 	}
 
 	if len(tags) == 0 {
@@ -115,6 +112,22 @@ func Classify(sk skill.Skill) []string {
 	}
 
 	return tags
+}
+
+// isMobility reports whether a skill changes a position: either via the reposition
+// effect (RepositionDistance != 0) or the legacy Self+Duration+Movement-marker form.
+func isMobility(sk skill.Skill, targetType string, duration int) bool {
+	if sk.GetPropertyI(property.RepositionDistance).I() != 0 {
+		return true
+	}
+	if targetType == string(def.TargetTypeSelf) && duration > 0 {
+		for _, p := range sk.Effect.Properties {
+			if p.Name(property.GameMaster) == string(property.Movement) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func targetTypeStr(sk skill.Skill) string {

@@ -90,6 +90,15 @@ const (
 
 	Cooldown SkillProperties = "Cooldown" // Absence means 3 turns. Special note: Cool down is stored as a counter, minValue represent initial cooldown at battle start. MaxValue represent the cooldown value when used.
 
+	// @spec-link [[mech_movement_reposition]]
+	// RepositionSubject indicates who the movement skill displaces: "Self" (caster — dash/teleport)
+	// or "Target" (the targeted entity — push/pull/kick). Absence means no reposition.
+	RepositionSubject SkillProperties = "RepositionSubject"
+	// RepositionDistance is the number of tiles the subject is displaced along the casting ray
+	// (caster→target). Positive moves along the ray (dash forward / push away from caster);
+	// negative moves against it (pull toward caster). Absence (or 0) means no reposition.
+	RepositionDistance SkillProperties = "RepositionDistance"
+
 	// @spec-link [[mech_trigger_system]]
 	// TriggerType defines when a positional effect fires. Value is a TriggerTypeValue string.
 	TriggerType     SkillProperties = "TriggerType"

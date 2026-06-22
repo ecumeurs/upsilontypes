@@ -274,6 +274,28 @@ const (
 	TargetingMechanicsLOS      TargetingMechanicsType = "Line of Sight"
 )
 
+// RepositionSubjectType identifies who a movement skill displaces.
+// @spec-link [[mech_movement_reposition]]
+type RepositionSubjectType string
+
+const (
+	RepositionSubjectSelf   RepositionSubjectType = "Self"   // caster moves (dash/teleport)
+	RepositionSubjectTarget RepositionSubjectType = "Target" // targeted entity moves (push/pull/kick)
+)
+
+// RepositionSubject builds the property marking who a movement skill displaces.
+func RepositionSubject(val RepositionSubjectType) *defaultproperty.DefaultStringProperty {
+	return defaultproperty.MakeValidatedStringProperty(property.RepositionSubject, string(val), property.FriendlyController, property.Skill, []string{
+		string(RepositionSubjectSelf),
+		string(RepositionSubjectTarget),
+	})
+}
+
+// RepositionDistance builds the signed tile-displacement property along the casting ray.
+func RepositionDistance(val int) *defaultproperty.DefaultIntProperty {
+	return defaultproperty.MakeIntProperty(property.RepositionDistance, val, property.FriendlyController, property.Skill)
+}
+
 // TriggerType defines when a positional effect fires.
 func TriggerType(val property.TriggerTypeValue) *defaultproperty.DefaultStringProperty {
 	return defaultproperty.MakeValidatedStringProperty(property.TriggerType, string(val), property.FriendlyController, property.Skill, []string{
@@ -355,6 +377,10 @@ func SkillProperty(ps property.SkillProperties) property.Property {
 		return SPLeech()
 	case property.MvtCost:
 		return MvtCost()
+	case property.RepositionSubject:
+		return RepositionSubject(RepositionSubjectSelf)
+	case property.RepositionDistance:
+		return RepositionDistance(0)
 	case property.TriggerType:
 		return TriggerType(property.TriggerOnEnter) // default
 	case property.RemoveOnTrigger:
