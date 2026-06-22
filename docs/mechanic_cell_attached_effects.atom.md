@@ -49,7 +49,7 @@ Enables the association of persistent skill effects with specific grid coordinat
 
 ## TECHNICAL INTERFACE
 
-- **Code Tag:** `@spec-link [[cell_attached_effects]]`
+- **Code Tag:** `@spec-link [[mechanic_cell_attached_effects]]`
 - **Related Files:** `upsilonbattle/battlearena/ruler/rules/move.go`, `upsilonbattle/battlearena/ruler/rules/beginingofturn.go`
 - **Integration:** Works with `mech_positional_effects`, `mech_trigger_system`
 

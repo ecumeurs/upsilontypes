@@ -1,7 +1,7 @@
 package skillgenerator
 
-// @test-link [[upsilonbattle:mech_skill_name_generation]]
-// @test-link [[shared:req_skill_generation]]
+// @test-link [[mech_skill_name_generation]]
+// @test-link [[req_skill_generation]]
 
 // TODO: uncomment and implement once namegen.go is written.
 //

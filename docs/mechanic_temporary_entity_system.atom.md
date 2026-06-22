@@ -1,11 +1,11 @@
 ---
-id: mechanic_mech_temporary_entity_system
+id: mechanic_temporary_entity_system
 status: DRAFT
 parents:
-  - [[req_tech_debt_backlog]]
+  - [[shared:req_tech_debt_backlog]]
 dependents:
-  - [[mec_cell_attached_effects]]
-  - [[mec_effect_caster_tracking]]
+  - [[upsilonbattle:mechanic_channeling_mechanic]]
+  - [[upsilonbattle:mechanic_expiration_controller]]
 human_name: Temporary Entity System
 type: MECHANIC
 layer: IMPLEMENTATION
@@ -84,7 +84,7 @@ When creating a zone effect:
 
 ## TECHNICAL INTERFACE
 
-- **Code Tag:** `@spec-link [[mech_temporary_entity_system]]`
+- **Code Tag:** `@spec-link [[mechanic_temporary_entity_system]]`
 - **Related Files:** `upsilonbattle/battlearena/ruler/rules/endofturn.go`, `upsilonbattle/battlearena/ruler/rules/gamestate.go`
 - **Integration:** Works with `mech_positional_effects`, `mech_entity_expiration`
 

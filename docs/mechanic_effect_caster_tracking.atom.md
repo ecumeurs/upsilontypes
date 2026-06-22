@@ -1,14 +1,15 @@
 ---
 id: mechanic_effect_caster_tracking
+human_name: "Effect Caster Tracking"
 status: DRAFT
 priority: 5
 version: 2.0
-parent: []
 dependents: []
 type: MECHANIC
 layer: IMPLEMENTATION
 tags: [effects, caster, credits]
-parents: []
+parents:
+  - [[contract_types_contract]]
 ---
 
 # Effect Caster Tracking
@@ -44,7 +45,7 @@ To ensure accurate credit attribution and mechanical integrity, the system maint
 
 ## TECHNICAL INTERFACE
 
-- **Code Tag:** `@spec-link [[effect_caster_tracking]]`
+- **Code Tag:** `@spec-link [[mechanic_effect_caster_tracking]]`
 - **Related Files:** `upsilonbattle/battlearena/property/effect/effect.go`, `upsilonbattle/battlearena/property/effect/effectapplicator/effectapplicator.go`
 
 ## EXPECTATION

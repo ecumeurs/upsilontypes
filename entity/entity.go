@@ -13,7 +13,7 @@ import (
 
 type EntityType int
 
-// @spec-link [[mechanic_mech_temporary_entity_system]]
+// @spec-link [[mechanic_temporary_entity_system]]
 const (
 	Character  EntityType = 0
 	Monster    EntityType = 1
@@ -192,7 +192,7 @@ func (e *Entity) RegisterBuff(b property.TemporaryProperties) {
 }
 
 // RemoveBuffsByOrigin removes all buffs from the entity that originated from a specific source ID.
-// @spec-link [[mec_item_buff_application]]
+// @spec-link [[mechanic_item_buff_application]]
 func (e *Entity) RemoveBuffsByOrigin(originID uuid.UUID) {
 	kept := make([]property.TemporaryProperties, 0, len(e.Buffs))
 	for _, b := range e.Buffs {

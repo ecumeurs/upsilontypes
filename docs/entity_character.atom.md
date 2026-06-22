@@ -11,9 +11,9 @@ parents:
   - [[shared:req_tech_debt_backlog]]
   - [[shared:requirement_customer_player_profile]]
 dependents:
-  - [[shared:rule_character_create_character]]
   - [[shared:rule_progression]]
   - [[entity_character_distribute_remaining_points]]
+  - [[rule_character_create_character]]
 ---
 # Character Entity
 

@@ -12,8 +12,8 @@ import (
 )
 
 // @test-link [[mech_skill_generator_blueprint]]
-// @test-link [[upsilonbattle:mechanic_mech_effect_stun]]
-// @test-link [[upsilonbattle:mechanic_mech_effect_poison]]
+// @test-link [[mechanic_effect_stun]]
+// @test-link [[mechanic_effect_poison]]
 
 // resetRand restores the default random function after deterministic tests.
 func resetRand() {

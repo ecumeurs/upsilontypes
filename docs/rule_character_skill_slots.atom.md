@@ -1,17 +1,20 @@
 ---
 id: rule_character_skill_slots
+human_name: "Character Skill Slots"
 status: STABLE
 parents:
   - [[entity_character_skill_inventory]]
 dependents:
+  - [[upsilonapi:api_character_skill_inventory]]
   - [[entity_character_skill_inventory]]
 priority: 5
 layer: ARCHITECTURE
 version: 2.0
 tags: ["skills", "progression", "equipment"]
+type: RULE
 ---
 
-# New Atom
+# Character Skill Slots
 
 ## INTENT
 To establish the character skill slot system where characters gain a new skill slot every 10 levels, starting with 1 base slot at level 1. This defines the maximum number of skills a character can have equipped for battle.

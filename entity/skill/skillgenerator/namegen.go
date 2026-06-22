@@ -8,7 +8,7 @@ import (
 
 // Name returns a diegetic skill name (max 24 chars) for the given tags and grade.
 // Template: [Modifier prefix] [Subject] [Suffix]
-// @spec-link [[upsilonbattle:mech_skill_name_generation]]
+// @spec-link [[mech_skill_name_generation]]
 func Name(primaryTag string, secondaryTags []string, grade string) string {
 	prefix := pickPrefix(secondaryTags)
 	subject := pickSubject(primaryTag)

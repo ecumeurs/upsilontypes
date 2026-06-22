@@ -38,7 +38,7 @@ const (
 	// Invisible: if true, the entity is not sent in client-facing state snapshots.
 	Invisible           EntityProperties = "Invisible"
 	// AIBehavior stores the slug for the automated behavior (e.g. "aggressive", "spooked").
-	// @spec-link [[mechanic_mech_behavior_layered]]
+	// @spec-link [[mechanic_behavior_layered]]
 	AIBehavior          EntityProperties = "AIBehavior"
 	// AIArchetype stores the archetype slug for controller-driven AI entities
 	// (e.g. "fighter", "ranger", "support", "sneak").

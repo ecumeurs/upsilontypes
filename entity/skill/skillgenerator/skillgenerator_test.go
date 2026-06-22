@@ -33,7 +33,7 @@ func TestGenerateRandomSkill(t *testing.T) {
 	}
 }
 
-// @test-link [[shared:req_skill_generation]]
+// @test-link [[req_skill_generation]]
 
 var gradeBands = map[string][2]int{
 	"I": {60, 150}, "II": {151, 300}, "III": {301, 500}, "IV": {501, 750}, "V": {751, 9999},

@@ -1,17 +1,19 @@
 ---
-id: mechanic_mech_skill_weight_calculator
+id: mechanic_skill_weight_calculator
 status: DRAFT
 human_name: Skill Weight Calculator Mechanic
 layer: IMPLEMENTATION
 tags: [skills, balance, mathematics]
-parents: []
+parents:
+  - [[module_skill_generator]]
 type: MECHANIC
 version: 2.0
 priority: 5
-dependents: []
+dependents:
+  - [[upsilonapi:api_skill_grading_computation]]
 ---
 
-# New Atom
+# Skill Weight Calculator Mechanic
 
 ## INTENT
 To provide a mathematical framework for skill balance using the Skill Weight (SW) system where positive effects add weight and execution costs subtract weight.
@@ -45,7 +47,7 @@ The Skill Weight Calculator implements the Net SW = 0 balance principle:
 **Balance Rule:** Net SW must equal 0 for a skill to be balanced.
 
 ## TECHNICAL INTERFACE
-- **Code Tag:** `@spec-link [[mech_skill_weight_calculator]]`
+- **Code Tag:** `@spec-link [[mechanic_skill_weight_calculator]]`
 - **Related Files:** `upsilonbattle/battlearena/entity/skill/skill.go`
 
 ## EXPECTATION

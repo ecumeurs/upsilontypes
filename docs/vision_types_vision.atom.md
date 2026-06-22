@@ -12,7 +12,7 @@ priority: 1
 dependents: []
 ---
 
-# New Atom
+# UpsilonTypes Vision
 
 ## INTENT
 Define the vision for UpsilonTypes as the unified domain model authority for the entire ecosystem.
@@ -23,7 +23,7 @@ Define the vision for UpsilonTypes as the unified domain model authority for the
 - **Domain Consistency:** Enforce strict typing for critical game entities (Characters, Skills, Boards) to prevent cross-module logic errors.
 
 ## TECHNICAL INTERFACE
-- **Code Tag:** `@spec-link [[types_vision]]`
-- **Related Atoms:** `[[entity_character]]`, `[[shared:upsilon_vision]]`
+- **Code Tag:** `@spec-link [[vision_types_vision]]`
+- **Related Atoms:** `[[entity_character]]`, `[[shared:vision_upsilon_vision]]`
 
 ## EXPECTATION

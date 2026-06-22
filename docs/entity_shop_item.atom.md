@@ -9,11 +9,14 @@ tags: [shop, items, catalog, iss-074]
 human_name: Shop Item Catalog Entity
 parents:
   - [[upsilonapi:domain_credit_economy]]
-  - [[upsilonbattle:mec_credit_spending_shop]]
-dependents: []
+  - [[upsilonapi:mechanic_shop_inventory_system]]
+dependents:
+  - [[upsilonapi:api_shop_browse]]
+  - [[upsilonapi:api_shop_item_admin_crud]]
+  - [[upsilonapi:entity_player_inventory]]
 ---
 
-# New Atom
+# Shop Item Catalog Entity
 
 ## INTENT
 To define the shop catalog entity — the immutable list of items players can purchase with credits. One row per purchasable item; the V2.0 seed contains exactly three rows (Basic Armor, Basic Sword, Swift Boots).
@@ -37,14 +40,14 @@ To define the shop catalog entity — the immutable list of items players can pu
 - Basic Sword — slot=weapon, properties={WeaponBaseDamage:5, WeaponType:"One-Handed Melee", WeaponRange:1}, cost=300.
 - Swift Boots — slot=utility, properties={Movement:1}, cost=150.
 
-**Admin mutations:** Full CRUD via `[[api_shop_item_admin_crud]]` (ISS-086). Includes availability toggling and exotic item creation.
+**Admin mutations:** Full CRUD via `[[upsilonapi:api_shop_item_admin_crud]]` (ISS-086). Includes availability toggling and exotic item creation.
 
 ## TECHNICAL INTERFACE
 - **Code Tag:** `@spec-link [[entity_shop_item]]`
 - **Laravel Model:** `App\Models\ShopItem`
 - **Migration:** `*_create_item_system_tables.php`
 - **Seeder:** `Database\Seeders\ShopItemsSeeder`
-- **API:** `[[api_shop_browse]]`
+- **API:** `[[upsilonapi:api_shop_browse]]`
 
 ## EXPECTATION
 - `php artisan migrate:fresh --seed` produces exactly three rows.

@@ -3,7 +3,11 @@ id: contract_types_contract
 status: STABLE
 layer: BUSINESS
 priority: 1
-dependents: []
+dependents:
+  - [[mech_entity_properties]]
+  - [[mech_positional_effects]]
+  - [[mechanic_effect_caster_tracking]]
+  - [[rule_item_pricing_simple]]
 human_name: UpsilonTypes Contract
 type: CONTRACT
 version: 1.0
@@ -12,7 +16,7 @@ parents:
   - [[shared:contract_upsilon_contract]]
 ---
 
-# New Atom
+# UpsilonTypes Contract
 
 ## INTENT
 Establish the stability and serialization requirements for the UpsilonTypes project.
@@ -24,7 +28,7 @@ Establish the stability and serialization requirements for the UpsilonTypes proj
 - **Traceability:** Every field in core entities must be linked to its corresponding specification atom.
 
 ## TECHNICAL INTERFACE
-- **Code Tag:** `@spec-link [[types_contract]]`
-- **Related Atoms:** `[[shared:upsilon_contract]]`
+- **Code Tag:** `@spec-link [[contract_types_contract]]`
+- **Related Atoms:** `[[shared:contract_upsilon_contract]]`
 
 ## EXPECTATION

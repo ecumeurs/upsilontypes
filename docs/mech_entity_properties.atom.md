@@ -7,7 +7,8 @@ version: 1.0
 status: STABLE
 priority: 5
 tags: []
-parents: []
+parents:
+  - [[contract_types_contract]]
 dependents:
   - [[mech_entity_properties_item_properties]]
   - [[mech_entity_properties_skill_properties]]

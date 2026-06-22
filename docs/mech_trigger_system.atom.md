@@ -3,7 +3,7 @@ id: mech_trigger_system
 status: DRAFT
 priority: 5
 version: 2.0
-parent:
+parents:
   - [[mech_positional_effects]]
 dependents: []
 type: MECHANIC

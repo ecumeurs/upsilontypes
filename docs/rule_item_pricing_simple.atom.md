@@ -1,15 +1,18 @@
 ---
 id: rule_item_pricing_simple
+human_name: "Item Pricing Simple"
 status: DRAFT
 priority: 5
 layer: ARCHITECTURE
 version: 2.0
 tags: ["shop", "pricing", "items", "economy"]
-parents: []
+parents:
+  - [[contract_types_contract]]
 dependents: []
+type: RULE
 ---
 
-# New Atom
+# Item Pricing Simple
 
 ## INTENT
 To establish a simple pricing model for shop items in V2 testing phase, using fixed credit costs instead of the full Skill Weight system. Prices are based on item type and stat bonuses, providing a predictable economy for initial testing.

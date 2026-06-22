@@ -3,8 +3,10 @@ id: mech_positional_effects
 status: DRAFT
 priority: 5
 version: 2.0
-parent: []
+parents:
+  - [[contract_types_contract]]
 dependents:
+  - [[mech_trigger_system]]
   - [[mechanic_cell_attached_effects]]
 type: MECHANIC
 layer: IMPLEMENTATION

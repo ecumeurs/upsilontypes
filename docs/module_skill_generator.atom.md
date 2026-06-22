@@ -8,11 +8,12 @@ status: DRAFT
 priority: 3
 tags: [skills, generation, module]
 parents:
-  - [[shared:req_skill_generation]]
+  - [[upsilonbattle:req_skill_generation]]
 dependents:
-  - [[api_skill_generation]]
+  - [[upsilonbattle:mech_skill_name_generation]]
   - [[mech_skill_classifier]]
   - [[mech_skill_generator_core]]
+  - [[mechanic_skill_weight_calculator]]
 ---
 
 # Skill Generator Module

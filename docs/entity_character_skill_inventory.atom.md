@@ -1,18 +1,21 @@
 ---
 id: entity_character_skill_inventory
+human_name: "Character Skill Inventory"
 status: STABLE
 tags: ["skills", "inventory", "progression"]
 parents:
   - [[entity_skill_template]]
   - [[rule_character_skill_slots]]
 dependents:
+  - [[upsilonapi:api_character_skill_inventory]]
   - [[rule_character_skill_slots]]
 priority: 5
 layer: ARCHITECTURE
 version: 2.0
+type: ENTITY
 ---
 
-# New Atom
+# Character Skill Inventory
 
 ## INTENT
 To establish a character skill inventory system where players can store, manage, and access all acquired skills regardless of current equipment status. This enables roguelike-style skill collection and swapping.
