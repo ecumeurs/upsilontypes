@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ecumeurs/upsilonmapdata/grid/position"
 	"github.com/ecumeurs/upsilontypes/entity/skill"
 	"github.com/ecumeurs/upsilontypes/property"
 	"github.com/ecumeurs/upsilontypes/property/def"
-	"github.com/ecumeurs/upsilonmapdata/grid/position"
 	"github.com/google/uuid"
 )
 
@@ -15,18 +15,18 @@ type EntityType int
 
 // @spec-link [[mechanic_temporary_entity_system]]
 const (
-	Character  EntityType = 0
-	Monster    EntityType = 1
+	Character EntityType = 0
+	Monster   EntityType = 1
 	// TimeBased is a channeling entity or delayed-effect entity that acts on its own turn.
-	TimeBased  EntityType = 2
+	TimeBased EntityType = 2
 	// Trap is an entity that triggers OnStep. It typically has no controller but has positional effects.
-	Trap       EntityType = 3
+	Trap EntityType = 3
 	// AreaEffect is an entity that affects a zone each turn.
 	AreaEffect EntityType = 4
 	// Obstacle is a player-created wall/barrier: blocks movement, has HP, may decay.
 	// NOTE: This is distinct from cell.CellType.Obstacle (immutable map geometry).
-	Obstacle   EntityType = 5
-	Others     EntityType = 6
+	Obstacle EntityType = 5
+	Others   EntityType = 6
 )
 
 type EntityOrientation int
@@ -55,6 +55,24 @@ type Entity struct {
 	Properties   map[string]property.Property
 	Buffs        []property.TemporaryProperties
 	Skills       map[uuid.UUID]skill.Skill
+	// IsCasting holds the in-flight channeled skill while the entity is locked in a
+	// channel. nil means the entity is not channeling. @spec-link [[upsilonbattle:mechanic_channeling_mechanic]]
+	IsCasting *CastingState
+}
+
+// CastingState tracks an in-flight channeled skill on its caster.
+//
+// The target is captured per the skill's targeting mode: entity-target skills must
+// FOLLOW their target (it can move before the channel resolves) so they store
+// TargetEntity; tile/self skills resolve at a fixed coordinate so they store
+// TargetPos. Exactly one of the two is set (the other is uuid.Nil / nil).
+//
+// @spec-link [[upsilonbattle:mechanic_channeling_mechanic]]
+type CastingState struct {
+	SkillID      uuid.UUID          // the channeled skill being cast
+	TargetEntity uuid.UUID          // entity-target channels; uuid.Nil for tile/self
+	TargetPos    *position.Position // tile/self channels; nil for entity-target
+	Interruption int                // 0-100; accumulates 10 per 1 damage; >=100 fails the channel
 }
 
 // NewEntity
@@ -133,8 +151,6 @@ func (e Entity) IsBackstabbing(target Entity) bool {
 
 	return backAngle >= backAngleMin && backAngle <= backAngleMax
 }
-
-
 
 // getBasePropertyOrDefault
 func (e Entity) getBasePropertyOrDefault(name interface{}) property.Property {
@@ -227,6 +243,12 @@ func (e *Entity) BuffTickDown() {
 
 func (e Entity) HasActed() bool {
 	return e.GetProperty(property.HasActed).Get().(bool)
+}
+
+// IsChanneling reports whether the entity is locked in a channeled skill cast.
+// @spec-link [[upsilonbattle:mechanic_channeling_mechanic]]
+func (e Entity) IsChanneling() bool {
+	return e.IsCasting != nil
 }
 
 func (e Entity) HasMoved() bool {
