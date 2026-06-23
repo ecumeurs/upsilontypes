@@ -83,10 +83,6 @@ func Invisible() *defaultproperty.DefaultBoolProperty {
 	return defaultproperty.MakeBoolProperty(property.Invisible, false, property.Public, property.Character)
 }
 
-func AIBehavior() *defaultproperty.DefaultStringProperty {
-	return defaultproperty.MakeStringProperty(property.AIBehavior, "none", property.Public, property.Character)
-}
-
 func AIArchetype() *defaultproperty.DefaultStringProperty {
 	return defaultproperty.MakeStringProperty(property.AIArchetype, "", property.Public, property.Character)
 }
@@ -150,8 +146,6 @@ func EntityProperty(name property.EntityProperties) property.Property {
 		return WalkThrough()
 	case property.Invisible:
 		return Invisible()
-	case property.AIBehavior:
-		return AIBehavior()
 	case property.AIArchetype:
 		return AIArchetype()
 	}
