@@ -241,6 +241,21 @@ func (e *Entity) BuffTickDown() {
 	e.Buffs = nbbuf
 }
 
+// SkillCooldownTickDown decrements every equipped skill's cooldown counter by
+// one, floored at 0. It mirrors BuffTickDown but operates on skill cooldowns
+// instead of buffs: a skill's Cooldown is set to its max value when cast and
+// must count back down to 0 (one step per elapsed turn of its owner) before it
+// can be cast again. Called once per turn for the entity whose turn is ending.
+// @spec-link [[upsilonbattle:mech_skill_validation]]
+func (e *Entity) SkillCooldownTickDown() {
+	for id, sk := range e.Skills {
+		if sk.Cooldown > 0 {
+			sk.Cooldown--
+			e.Skills[id] = sk
+		}
+	}
+}
+
 func (e Entity) HasActed() bool {
 	return e.GetProperty(property.HasActed).Get().(bool)
 }
