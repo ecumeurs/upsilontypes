@@ -4,7 +4,6 @@ status: DRAFT
 parents:
   - [[shared:req_tech_debt_backlog]]
 dependents:
-  - [[upsilonbattle:mechanic_channeling_mechanic]]
   - [[upsilonbattle:mechanic_expiration_controller]]
 human_name: Temporary Entity System
 type: MECHANIC
