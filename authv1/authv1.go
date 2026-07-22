@@ -27,6 +27,11 @@ type User struct {
 	DeletedAt *time.Time `json:"deleted_at"`
 	// UpdatedAt feeds the admin registry's cursor pagination.
 	UpdatedAt time.Time `json:"updated_at"`
+	// Registrations lists the service keys (e.g. "tactical") this account is
+	// enrolled in — the game-agnostic account model's only game-awareness.
+	// Carried on introspection too, so consumers can gate on enrollment
+	// without an extra call.
+	Registrations []string `json:"registrations"`
 }
 
 // Token is the metadata of one opaque personal access token; the plaintext
