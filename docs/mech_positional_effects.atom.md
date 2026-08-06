@@ -4,7 +4,7 @@ status: DRAFT
 priority: 5
 version: 2.0
 parents:
-  - [[contract_types_contract]]
+  - [[upsilonapi:domain_skill_system]]
 dependents:
   - [[mech_trigger_system]]
   - [[mechanic_cell_attached_effects]]

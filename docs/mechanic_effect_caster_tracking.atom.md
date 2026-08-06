@@ -9,7 +9,7 @@ type: MECHANIC
 layer: IMPLEMENTATION
 tags: [effects, caster, credits]
 parents:
-  - [[contract_types_contract]]
+  - [[upsilonapi:domain_credit_economy]]
 ---
 
 # Effect Caster Tracking

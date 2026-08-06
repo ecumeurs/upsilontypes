@@ -8,7 +8,8 @@ status: STABLE
 priority: 5
 tags: []
 parents:
-  - [[contract_types_contract]]
+  - [[upsilonapi:domain_credit_economy]]
+  - [[upsilonapi:domain_skill_system]]
 dependents:
   - [[mech_entity_properties_item_properties]]
   - [[mech_entity_properties_skill_properties]]

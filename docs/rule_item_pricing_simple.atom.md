@@ -7,7 +7,7 @@ layer: ARCHITECTURE
 version: 2.0
 tags: ["shop", "pricing", "items", "economy"]
 parents:
-  - [[contract_types_contract]]
+  - [[upsilonapi:domain_credit_economy]]
 dependents: []
 type: RULE
 ---

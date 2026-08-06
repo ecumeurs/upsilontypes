@@ -3,8 +3,7 @@ id: vision_types_vision
 status: STABLE
 type: VISION
 tags: [governance, vision, types]
-parents:
-  - [[shared:vision_upsilon_vision]]
+parents: []
 human_name: UpsilonTypes Vision
 layer: BUSINESS
 version: 1.0

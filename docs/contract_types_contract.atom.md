@@ -3,17 +3,12 @@ id: contract_types_contract
 status: STABLE
 layer: BUSINESS
 priority: 1
-dependents:
-  - [[mech_entity_properties]]
-  - [[mech_positional_effects]]
-  - [[mechanic_effect_caster_tracking]]
-  - [[rule_item_pricing_simple]]
+dependents: []
 human_name: UpsilonTypes Contract
 type: CONTRACT
 version: 1.0
 tags: [governance, contract, types]
-parents:
-  - [[shared:contract_upsilon_contract]]
+parents: []
 ---
 
 # UpsilonTypes Contract
