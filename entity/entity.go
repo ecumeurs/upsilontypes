@@ -168,6 +168,7 @@ func (e Entity) getBasePropertyOrDefault(name interface{}) property.Property {
 }
 
 // GetProperty will return the property with the given name, or default
+// @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
 func (e Entity) GetProperty(name interface{}) property.Property {
 	prop := e.getBasePropertyOrDefault(name)
 
@@ -193,6 +194,22 @@ func (e Entity) GetPropertyF(name interface{}) property.FloatProperty {
 // GetPropertyC will return the property with the given name, or default
 func (e Entity) GetPropertyC(name interface{}) property.IntCounterProperty {
 	return e.GetProperty(name).(property.IntCounterProperty)
+}
+
+// GetBaseProperty returns the property's BASE state — the value stored in
+// Entity.Properties, with no buff composition applied. Use this (never
+// GetProperty) as the read side of any read-modify-write that persists back
+// into base state, so the buff's contribution is never captured into the
+// write.
+// @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
+func (e Entity) GetBaseProperty(name interface{}) property.Property {
+	return e.getBasePropertyOrDefault(name)
+}
+
+// GetBasePropertyC is the IntCounterProperty-typed variant of GetBaseProperty.
+// @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
+func (e Entity) GetBasePropertyC(name interface{}) property.IntCounterProperty {
+	return e.GetBaseProperty(name).(property.IntCounterProperty)
 }
 
 func (e *Entity) UpdateProperty(p property.Property) {
@@ -276,43 +293,77 @@ func (e Entity) HasProperty(name interface{}) bool {
 }
 
 // RepsertPropertyValue will insert property if unknown!
+//
+// Reads and writes BASE state only: the value passed in is the intended new
+// base value, not a composed (buffed) one. Any active buff for p is neither
+// consulted nor disturbed — it continues to apply on top via GetProperty.
+// @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
 func (e *Entity) RepsertPropertyValue(p interface{}, value interface{}) {
-	prop := e.GetProperty(p)
+	prop := e.getBasePropertyOrDefault(p)
 	prop.Set(value)
 	e.Properties[prop.Name(property.GameMaster)] = prop
 }
 
 // RepsertPropertyCMaxValue inserts or updates a counter property maximum value.
+// Reads and writes BASE state only; see RepsertPropertyValue.
+// @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
 func (e *Entity) RepsertPropertyCMaxValue(p interface{}, maxvalue int) {
-	prop := e.GetProperty(p).(property.IntCounterProperty)
+	prop := e.getBasePropertyOrDefault(p).(property.IntCounterProperty)
 	prop.SetMaxValue(maxvalue)
 	e.Properties[prop.Name(property.GameMaster)] = prop
 }
 
 // RepsertPropertyCValue inserts or updates a counter property current value.
+// Reads and writes BASE state only; see RepsertPropertyValue.
+// @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
 func (e *Entity) RepsertPropertyCValue(p interface{}, value int) {
-	prop := e.GetProperty(p).(property.IntCounterProperty)
+	prop := e.getBasePropertyOrDefault(p).(property.IntCounterProperty)
 	prop.SetValue(value)
 	e.Properties[prop.Name(property.GameMaster)] = prop
 }
 
 // UpdatePropertyValue Will only update value if known to the entity (wont affect buffs)
+// Reads and writes BASE state only; see RepsertPropertyValue.
+// @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
 func (e *Entity) UpdatePropertyValue(p interface{}, value interface{}) {
-	prop := e.GetProperty(p)
+	prop := e.getBasePropertyOrDefault(p)
 	prop.Set(value)
 	e.UpdateProperty(prop)
 }
 
 // UpdatePropertyCMaxValue Will only update max value if known to the entity (wont affect buffs)
+// Reads and writes BASE state only; see RepsertPropertyValue.
+// @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
 func (e *Entity) UpdatePropertyCMaxValue(p interface{}, maxvalue int) {
-	prop := e.GetProperty(p).(property.IntCounterProperty)
+	prop := e.getBasePropertyOrDefault(p).(property.IntCounterProperty)
 	prop.SetMaxValue(maxvalue)
 	e.UpdateProperty(prop)
 }
 
 // UpdatePropertyCValue Will only update current value if known to the entity (wont affect buffs)
+// Reads and writes BASE state only; see RepsertPropertyValue.
+// @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
 func (e *Entity) UpdatePropertyCValue(p interface{}, value int) {
-	prop := e.GetProperty(p).(property.IntCounterProperty)
+	prop := e.getBasePropertyOrDefault(p).(property.IntCounterProperty)
 	prop.SetValue(value)
+	e.UpdateProperty(prop)
+}
+
+// AdjustPropertyCValue applies delta to a counter property's BASE value (never
+// its MaxValue), leaving the base MaxValue and every active buff untouched.
+//
+// This is the write-isolation primitive for read-modify-write cycles that
+// derive delta from a composed (buffed) read — e.g. "subtract this skill's
+// cost from current HP" or "apply this much damage". Because
+// composed = base + buffSum and buffSum is constant across the single
+// operation, applying the same delta to base that was observed at the
+// composed level strips the buff's contribution exactly: it neither leaks
+// into base (no escalation on repeat) nor is lost (the buff still re-applies
+// on the next GetProperty read). Callers compute delta as
+// (desired composed value after the operation) - (composed value before it).
+// @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
+func (e *Entity) AdjustPropertyCValue(p interface{}, delta int) {
+	prop := e.getBasePropertyOrDefault(p).(property.IntCounterProperty)
+	prop.SetValue(prop.GetValue() + delta)
 	e.UpdateProperty(prop)
 }
