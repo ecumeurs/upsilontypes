@@ -18,7 +18,7 @@ func TestClassify_Melee(t *testing.T) {
 	sk.Targeting[property.Range.String()] =
 		defaultproperty.MakeIntCounterProperty(property.Range, 1, 1, property.Public, property.Skill)
 	sk.Effect.Properties = append(sk.Effect.Properties,
-		defaultproperty.MakeIntProperty(property.Damage, 80, property.Public, property.Skill),
+		defaultproperty.MakeIntProperty(property.DamageScale, 80, property.Public, property.Skill),
 	)
 	tags := Classify(sk)
 	found := false

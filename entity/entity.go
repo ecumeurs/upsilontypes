@@ -152,8 +152,24 @@ func (e Entity) IsBackstabbing(target Entity) bool {
 	return backAngle >= backAngleMin && backAngle <= backAngleMax
 }
 
-// getBasePropertyOrDefault
-func (e Entity) getBasePropertyOrDefault(name interface{}) property.Property {
+// getBasePropertyOrDefault returns the BASE (unbuffed) property for name,
+// backed by the entity's own stored value if present or the registry default
+// otherwise.
+//
+// Crash-early scope guard: an Entity queried for a key that the property/def
+// registry does not mark ScopeEntity is a programming error (e.g. an item's
+// "Poison" key being resolved as if it were the entity Poison buff — the
+// ISS-147 class of bug). Per CODING_RULE §3/§4 there is no silent default or
+// "save the day" fallback here; we panic.
+func (e Entity) getBasePropertyOrDefault(name property.Key) property.Property {
+	entry, ok := def.Lookup(name)
+	if !ok {
+		panic(fmt.Sprintf("entity: property key %q is not registered in the property/def registry; cannot resolve it for an Entity", name))
+	}
+	if entry.Scopes&def.ScopeEntity == 0 {
+		panic(fmt.Sprintf("entity: property key %q is not entity-scoped (scopes=%#b); using a skill- or item-only key on an Entity is a programming error", name, entry.Scopes))
+	}
+
 	nname := property.PropertyToString(name)
 
 	var prop property.Property
@@ -169,7 +185,7 @@ func (e Entity) getBasePropertyOrDefault(name interface{}) property.Property {
 
 // GetProperty will return the property with the given name, or default
 // @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
-func (e Entity) GetProperty(name interface{}) property.Property {
+func (e Entity) GetProperty(name property.Key) property.Property {
 	prop := e.getBasePropertyOrDefault(name)
 
 	buffs := e.GetBuffsFor(name)
@@ -182,17 +198,17 @@ func (e Entity) GetProperty(name interface{}) property.Property {
 }
 
 // GetPropertyI will return the property with the given name, or default
-func (e Entity) GetPropertyI(name interface{}) property.IntProperty {
+func (e Entity) GetPropertyI(name property.Key) property.IntProperty {
 	return e.GetProperty(name).(property.IntProperty)
 }
 
 // GetPropertyF will return the property with the given name, or default
-func (e Entity) GetPropertyF(name interface{}) property.FloatProperty {
+func (e Entity) GetPropertyF(name property.Key) property.FloatProperty {
 	return e.GetProperty(name).(property.FloatProperty)
 }
 
 // GetPropertyC will return the property with the given name, or default
-func (e Entity) GetPropertyC(name interface{}) property.IntCounterProperty {
+func (e Entity) GetPropertyC(name property.Key) property.IntCounterProperty {
 	return e.GetProperty(name).(property.IntCounterProperty)
 }
 
@@ -202,13 +218,13 @@ func (e Entity) GetPropertyC(name interface{}) property.IntCounterProperty {
 // into base state, so the buff's contribution is never captured into the
 // write.
 // @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
-func (e Entity) GetBaseProperty(name interface{}) property.Property {
+func (e Entity) GetBaseProperty(name property.Key) property.Property {
 	return e.getBasePropertyOrDefault(name)
 }
 
 // GetBasePropertyC is the IntCounterProperty-typed variant of GetBaseProperty.
 // @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
-func (e Entity) GetBasePropertyC(name interface{}) property.IntCounterProperty {
+func (e Entity) GetBasePropertyC(name property.Key) property.IntCounterProperty {
 	return e.GetBaseProperty(name).(property.IntCounterProperty)
 }
 
@@ -220,12 +236,13 @@ func (e *Entity) RegisterSkill(s skill.Skill) {
 	e.Skills[s.ID] = s
 }
 
+// @spec-link [[upsilonbattle:mechanic_item_buff_application]]
 func (e *Entity) RegisterBuff(b property.TemporaryProperties) {
 	e.Buffs = append(e.Buffs, b)
 }
 
 // RemoveBuffsByOrigin removes all buffs from the entity that originated from a specific source ID.
-// @spec-link [[mechanic_item_buff_application]]
+// @spec-link [[upsilonbattle:mechanic_item_buff_application]]
 func (e *Entity) RemoveBuffsByOrigin(originID uuid.UUID) {
 	kept := make([]property.TemporaryProperties, 0, len(e.Buffs))
 	for _, b := range e.Buffs {
@@ -236,7 +253,8 @@ func (e *Entity) RemoveBuffsByOrigin(originID uuid.UUID) {
 	e.Buffs = kept
 }
 
-func (e Entity) GetBuffsFor(name interface{}) []property.Property {
+// @spec-link [[upsilonbattle:mechanic_item_buff_application]]
+func (e Entity) GetBuffsFor(name property.Key) []property.Property {
 	nname := property.PropertyToString(name)
 
 	res := make([]property.Property, 0)
@@ -287,7 +305,7 @@ func (e Entity) HasMoved() bool {
 	return e.GetProperty(property.HasMoved).Get().(bool)
 }
 
-func (e Entity) HasProperty(name interface{}) bool {
+func (e Entity) HasProperty(name property.Key) bool {
 	_, found := e.Properties[property.PropertyToString(name)]
 	return found
 }
@@ -298,7 +316,7 @@ func (e Entity) HasProperty(name interface{}) bool {
 // base value, not a composed (buffed) one. Any active buff for p is neither
 // consulted nor disturbed — it continues to apply on top via GetProperty.
 // @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
-func (e *Entity) RepsertPropertyValue(p interface{}, value interface{}) {
+func (e *Entity) RepsertPropertyValue(p property.Key, value interface{}) {
 	prop := e.getBasePropertyOrDefault(p)
 	prop.Set(value)
 	e.Properties[prop.Name(property.GameMaster)] = prop
@@ -307,7 +325,7 @@ func (e *Entity) RepsertPropertyValue(p interface{}, value interface{}) {
 // RepsertPropertyCMaxValue inserts or updates a counter property maximum value.
 // Reads and writes BASE state only; see RepsertPropertyValue.
 // @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
-func (e *Entity) RepsertPropertyCMaxValue(p interface{}, maxvalue int) {
+func (e *Entity) RepsertPropertyCMaxValue(p property.Key, maxvalue int) {
 	prop := e.getBasePropertyOrDefault(p).(property.IntCounterProperty)
 	prop.SetMaxValue(maxvalue)
 	e.Properties[prop.Name(property.GameMaster)] = prop
@@ -316,7 +334,7 @@ func (e *Entity) RepsertPropertyCMaxValue(p interface{}, maxvalue int) {
 // RepsertPropertyCValue inserts or updates a counter property current value.
 // Reads and writes BASE state only; see RepsertPropertyValue.
 // @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
-func (e *Entity) RepsertPropertyCValue(p interface{}, value int) {
+func (e *Entity) RepsertPropertyCValue(p property.Key, value int) {
 	prop := e.getBasePropertyOrDefault(p).(property.IntCounterProperty)
 	prop.SetValue(value)
 	e.Properties[prop.Name(property.GameMaster)] = prop
@@ -325,7 +343,7 @@ func (e *Entity) RepsertPropertyCValue(p interface{}, value int) {
 // UpdatePropertyValue Will only update value if known to the entity (wont affect buffs)
 // Reads and writes BASE state only; see RepsertPropertyValue.
 // @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
-func (e *Entity) UpdatePropertyValue(p interface{}, value interface{}) {
+func (e *Entity) UpdatePropertyValue(p property.Key, value interface{}) {
 	prop := e.getBasePropertyOrDefault(p)
 	prop.Set(value)
 	e.UpdateProperty(prop)
@@ -334,7 +352,7 @@ func (e *Entity) UpdatePropertyValue(p interface{}, value interface{}) {
 // UpdatePropertyCMaxValue Will only update max value if known to the entity (wont affect buffs)
 // Reads and writes BASE state only; see RepsertPropertyValue.
 // @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
-func (e *Entity) UpdatePropertyCMaxValue(p interface{}, maxvalue int) {
+func (e *Entity) UpdatePropertyCMaxValue(p property.Key, maxvalue int) {
 	prop := e.getBasePropertyOrDefault(p).(property.IntCounterProperty)
 	prop.SetMaxValue(maxvalue)
 	e.UpdateProperty(prop)
@@ -343,7 +361,7 @@ func (e *Entity) UpdatePropertyCMaxValue(p interface{}, maxvalue int) {
 // UpdatePropertyCValue Will only update current value if known to the entity (wont affect buffs)
 // Reads and writes BASE state only; see RepsertPropertyValue.
 // @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
-func (e *Entity) UpdatePropertyCValue(p interface{}, value int) {
+func (e *Entity) UpdatePropertyCValue(p property.Key, value int) {
 	prop := e.getBasePropertyOrDefault(p).(property.IntCounterProperty)
 	prop.SetValue(value)
 	e.UpdateProperty(prop)
@@ -362,7 +380,7 @@ func (e *Entity) UpdatePropertyCValue(p interface{}, value int) {
 // on the next GetProperty read). Callers compute delta as
 // (desired composed value after the operation) - (composed value before it).
 // @spec-link [[upsilonbattle:rule_entity_property_write_isolation]]
-func (e *Entity) AdjustPropertyCValue(p interface{}, delta int) {
+func (e *Entity) AdjustPropertyCValue(p property.Key, delta int) {
 	prop := e.getBasePropertyOrDefault(p).(property.IntCounterProperty)
 	prop.SetValue(prop.GetValue() + delta)
 	e.UpdateProperty(prop)

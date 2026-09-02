@@ -13,7 +13,7 @@ func TestSkillWeightCalculator(t *testing.T) {
 	s1 := skill.New()
 	
 	// Add Damage property (+100 SW)
-	s1.Effect.Properties = append(s1.Effect.Properties, defaultproperty.MakeIntProperty(property.Damage, 100, property.Public, property.Skill))
+	s1.Effect.Properties = append(s1.Effect.Properties, defaultproperty.MakeIntProperty(property.DamageScale, 100, property.Public, property.Skill))
 	// Add Critical Chance property (+50 SW)
 	s1.Effect.Properties = append(s1.Effect.Properties, defaultproperty.MakeIntProperty(property.CriticalChance, 25, property.Public, property.Skill))
 	// Set Range to 3 (+20 SW)

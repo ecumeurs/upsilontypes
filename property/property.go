@@ -9,7 +9,7 @@ type PropertyType int
 const (
 	None      PropertyType = 0
 	Character PropertyType = 1
-	// @spec-link [[mech_entity_properties_skill_properties]]
+	// @spec-link [[upsilontypes:module_property_key_registry]]
 	Skill     PropertyType = 2
 	Item      PropertyType = 3
 )

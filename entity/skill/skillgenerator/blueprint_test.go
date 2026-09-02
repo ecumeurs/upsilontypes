@@ -12,7 +12,7 @@ func TestBlueprint_SetEffectProperty_AddsNew(t *testing.T) {
 	bp := newBlueprint()
 	bp.addDamage(50)
 
-	dmg := bp.sk.GetPropertyI(property.Damage).I()
+	dmg := bp.sk.GetPropertyI(property.DamageScale).I()
 	if dmg != 50 {
 		t.Errorf("expected Damage=50, got %d", dmg)
 	}
@@ -23,7 +23,7 @@ func TestBlueprint_SetEffectProperty_ReplacesExisting(t *testing.T) {
 	// newBlueprint initializes Damage to 0
 	bp.addDamage(80)
 
-	dmg := bp.sk.GetPropertyI(property.Damage).I()
+	dmg := bp.sk.GetPropertyI(property.DamageScale).I()
 	// Since Damage is a non-counter (IntProperty), setEffectProperty accumulates:
 	// existing 0 + 80 = 80
 	if dmg != 80 {

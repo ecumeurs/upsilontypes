@@ -1,12 +1,12 @@
 package skillgenerator
 
 import (
+	"github.com/ecumeurs/upsilonmapdata/grid/position/pattern"
 	"github.com/ecumeurs/upsilontypes/entity/skill"
 	"github.com/ecumeurs/upsilontypes/entity/skill/skillweight"
 	"github.com/ecumeurs/upsilontypes/property"
 	"github.com/ecumeurs/upsilontypes/property/def"
 	"github.com/ecumeurs/upsilontypes/property/defaultproperty"
-	"github.com/ecumeurs/upsilonmapdata/grid/position/pattern"
 )
 
 // blueprint builds a skill while tracking positive SW spend.
@@ -33,7 +33,7 @@ func newBlueprint() *blueprint {
 	return bp
 }
 
-func (b *blueprint) setEffectProperty(p property.SkillProperties, val int, counter bool) {
+func (b *blueprint) setEffectProperty(p property.Key, val int, counter bool) {
 	pstr := p.String()
 	var newP property.Property
 	if counter {
@@ -64,7 +64,7 @@ func (b *blueprint) addDamage(dmg int) *blueprint {
 	if dmg < 0 {
 		dmg = 0
 	}
-	b.setEffectProperty(property.Damage, dmg, false)
+	b.setEffectProperty(property.DamageScale, dmg, false)
 	return b
 }
 

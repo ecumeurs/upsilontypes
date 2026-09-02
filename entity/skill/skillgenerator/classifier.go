@@ -76,7 +76,7 @@ func Classify(sk skill.Skill) []string {
 	}
 
 	rangeProp := sk.GetPropertyC(property.Range).GetMaxValue()
-	damage := sk.GetPropertyI(property.Damage).I()
+	damage := sk.GetPropertyI(property.DamageScale).I()
 
 	if rangeProp >= 2 && damage > 0 {
 		tags = append(tags, "ranged")

@@ -53,7 +53,7 @@ func TestProduceMelee_DamageOnly(t *testing.T) {
 		t.Errorf("melee range: expected 1, got %d", rng)
 	}
 
-	dmg := sk.GetPropertyI(property.Damage).I()
+	dmg := sk.GetPropertyI(property.DamageScale).I()
 	if dmg <= 0 {
 		t.Errorf("melee damage: expected > 0, got %d", dmg)
 	}
@@ -98,7 +98,7 @@ func TestProduceRanged_RangeAndDamage(t *testing.T) {
 		t.Errorf("ranged range: expected [2,4], got %d", rng)
 	}
 
-	dmg := sk.GetPropertyI(property.Damage).I()
+	dmg := sk.GetPropertyI(property.DamageScale).I()
 	if dmg <= 0 {
 		t.Errorf("ranged damage: expected > 0, got %d", dmg)
 	}

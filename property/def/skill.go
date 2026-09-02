@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ecumeurs/upsilonmapdata/grid/position/pattern"
 	"github.com/ecumeurs/upsilontypes/property"
 	"github.com/ecumeurs/upsilontypes/property/defaultproperty"
-	"github.com/ecumeurs/upsilonmapdata/grid/position/pattern"
 )
 
 // Prepare default Properties.
@@ -28,8 +28,9 @@ func Parry() *defaultproperty.DefaultIntProperty {
 	return defaultproperty.MakeIntProperty(property.Parry, 0, property.FriendlyController, property.Skill)
 }
 
-func Damage() *defaultproperty.DefaultIntProperty {
-	return defaultproperty.MakeIntProperty(property.Damage, 100, property.FriendlyController, property.Skill)
+// DamageScale builds the percentage scaling-of-attack skill property; absence means 100%.
+func DamageScale() *defaultproperty.DefaultIntProperty {
+	return defaultproperty.MakeIntProperty(property.DamageScale, 100, property.FriendlyController, property.Skill)
 }
 
 func Heal() *defaultproperty.DefaultIntProperty {
@@ -88,8 +89,9 @@ func SPLeech() *defaultproperty.DefaultIntProperty {
 	return defaultproperty.MakeIntProperty(property.SPLeech, 0, property.FriendlyController, property.Skill)
 }
 
-func MvtCost() *defaultproperty.DefaultIntProperty {
-	return defaultproperty.MakeIntProperty(property.MvtCost, 0, property.FriendlyController, property.Skill)
+// MovementCost builds the movement-cost skill property; absence means 0.
+func MovementCost() *defaultproperty.DefaultIntProperty {
+	return defaultproperty.MakeIntProperty(property.MovementCost, 0, property.FriendlyController, property.Skill)
 }
 
 // Cooldown() Default to 0, 3 ;Special note: Cool down is stored as a counter, minValue represent initial cooldown at battle start. MaxValue represent the cooldown value when used.
@@ -98,7 +100,7 @@ func Cooldown() *defaultproperty.DefaultIntCounterProperty {
 	return defaultproperty.MakeIntCounterProperty(property.Cooldown, 0, 3, property.FriendlyController, property.Skill)
 }
 
-// Behavior property.Property: 	Behavior SkillProperties = "Behavior" property.Skill broad category: Direct, Reaction, Passive, Counter
+// Behavior property.Property: 	Behavior Key = "Behavior" property.Skill broad category: Direct, Reaction, Passive, Counter
 
 // Note: Behavior is a property because ...
 // Expect buffs to have an impact on behavior (e.g. a buff that makes a skill a counter skill)
@@ -325,68 +327,13 @@ func DefaultTargetingMechanics() *defaultproperty.DefaultStringProperty {
 	})
 }
 
-func SkillProperty(ps property.SkillProperties) property.Property {
-	switch ps {
-	case property.Accuracy:
-		return Accuracy()
-	case property.Behavior:
-		return DefaultBehavior()
-	case property.Range:
-		return DefaultRange()
-	case property.Zone:
-		return DefaultZone()
-	case property.TargetType:
-		return DefaultTargetType()
-	case property.TargetingMechanics:
-		return DefaultTargetingMechanics()
-	case property.Dodge:
-		return Dodge()
-	case property.Parry:
-		return Parry()
-	case property.Damage:
-		return Damage()
-	case property.Heal:
-		return Heal()
-	case property.ShieldPower:
-		return ShieldPower()
-	case property.StunPower:
-		return StunPower()
-	case property.StunChance:
-		return StunChance()
-	case property.CriticalChance:
-		return CriticalChance()
-	case property.CriticalMultiplier:
-		return CriticalMultiplier()
-	case property.Duration:
-		return Duration()
-	case property.PoisonPower:
-		return PoisonPower()
-	case property.PoisonChance:
-		return PoisonChance()
-	case property.Delay:
-		return Delay()
-	case property.Channeling:
-		return Channeling()
-	case property.Cooldown:
-		return Cooldown()
-	case property.HPLeech:
-		return HPLeech()
-	case property.MPLeech:
-		return MPLeech()
-	case property.SPLeech:
-		return SPLeech()
-	case property.MvtCost:
-		return MvtCost()
-	case property.RepositionSubject:
-		return RepositionSubject(RepositionSubjectSelf)
-	case property.RepositionDistance:
-		return RepositionDistance(0)
-	case property.TriggerType:
-		return TriggerType(property.TriggerOnEnter) // default
-	case property.RemoveOnTrigger:
-		return RemoveOnTrigger(true)
-	case property.TriggerCount:
-		return TriggerCount(1)
+// SkillProperty resolves the default Property for k, registry-backed and
+// scope-filtered to Skill. Returns nil for an unknown key or a key not scoped
+// to Skill (crash-early: no invented fallback for a wrong-scope key).
+func SkillProperty(k property.Key) property.Property {
+	entry, ok := Lookup(k)
+	if !ok || entry.Scopes&ScopeSkill == 0 {
+		return nil
 	}
-	return nil
+	return entry.New()
 }

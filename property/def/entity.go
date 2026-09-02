@@ -12,7 +12,7 @@ func HP() *defaultproperty.DefaultIntCounterProperty {
 }
 
 func Movement() *defaultproperty.DefaultIntCounterProperty {
-	return defaultproperty.MakeIntCounterProperty(property.Movement, 5, 5, property.FriendlyController, property.Character)
+	return defaultproperty.MakeIntCounterProperty(property.Movement, 3, 3, property.FriendlyController, property.Character)
 }
 
 func SP() *defaultproperty.DefaultIntCounterProperty {
@@ -88,6 +88,7 @@ func AIArchetype() *defaultproperty.DefaultStringProperty {
 }
 
 // note: futher properties may be added per entity basis.
+// @spec-link [[upsilontypes:module_property_key_registry]]
 func PropertiesForCharacter() []property.Property {
 	return []property.Property{
 		defaultproperty.MakeIntCounterProperty(property.HP, 10, 10, property.Public, property.Character),
@@ -106,48 +107,14 @@ func PropertiesForCharacter() []property.Property {
 	}
 }
 
-func EntityProperty(name property.EntityProperties) property.Property {
-	switch name {
-	case property.HP:
-		return HP()
-	case property.Movement:
-		return Movement()
-	case property.SP:
-		return SP()
-	case property.MP:
-		return MP()
-	case property.Attack:
-		return Attack()
-	case property.Defense:
-		return Defense()
-	case property.JumpHeight:
-		return JumpHeight()
-	case property.IsDying:
-		return IsDying()
-	case property.HasMoved:
-		return HasMoved()
-	case property.HasActed:
-		return HasActed()
-	case property.AttackRange:
-		return AttackRange()
-	case property.Shield:
-		return Shield()
-	case property.Poison:
-		return Poison()
-	case property.Stun:
-		return Stun()
-	case property.TeamID:
-		return TeamID()
-	case property.EntityDuration:
-		return EntityDuration()
-	case property.ExpiresWithCaster:
-		return ExpiresWithCaster()
-	case property.WalkThrough:
-		return WalkThrough()
-	case property.Invisible:
-		return Invisible()
-	case property.AIArchetype:
-		return AIArchetype()
+// EntityProperty resolves the default Property for k, registry-backed and
+// scope-filtered to Entity. Returns nil for an unknown key or a key not
+// scoped to Entity (crash-early: no invented fallback for a wrong-scope key).
+// @spec-link [[upsilontypes:module_property_key_registry]]
+func EntityProperty(k property.Key) property.Property {
+	entry, ok := Lookup(k)
+	if !ok || entry.Scopes&ScopeEntity == 0 {
+		return nil
 	}
-	return nil
+	return entry.New()
 }

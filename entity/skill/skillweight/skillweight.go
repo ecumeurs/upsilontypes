@@ -26,7 +26,7 @@ func Calculate(s *skill.Skill) (positiveSW int, negativeSW int, netSW int) {
 	}
 	
 	// Damage Multiplier: +10 SW per 10% (100% damage = +100 SW)
-	damageProp := s.GetPropertyI(property.Damage).I()
+	damageProp := s.GetPropertyI(property.DamageScale).I()
 	if damageProp > 0 {
 		positiveSW += damageProp
 	}

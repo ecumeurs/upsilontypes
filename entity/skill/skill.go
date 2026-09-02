@@ -43,6 +43,7 @@ func NewSkill(name string, targeting, cost map[string]property.Property, effect 
 		Effect:    effect,
 	}
 }
+
 // IsDirect
 func (s *Skill) IsDirect() bool {
 	return s.Behavior.Get().(string) == string(def.BehaviorTypeDirect)
@@ -69,7 +70,7 @@ func (s *Skill) IsTrap() bool {
 }
 
 // HasProperty
-func (s Skill) HasProperty(p interface{}) bool {
+func (s Skill) HasProperty(p property.Key) bool {
 	pstr := property.PropertyToString(p)
 	for _, v := range s.Targeting {
 		if v.Name(property.GameMaster) == pstr {
@@ -85,7 +86,7 @@ func (s Skill) HasProperty(p interface{}) bool {
 }
 
 // HasProperties
-func (s Skill) HasAnyProperties(p ...property.SkillProperties) bool {
+func (s Skill) HasAnyProperties(p ...property.Key) bool {
 	one := false
 	for _, v := range p {
 		if s.HasProperty(v) {
@@ -95,7 +96,7 @@ func (s Skill) HasAnyProperties(p ...property.SkillProperties) bool {
 	return one
 }
 
-func (s Skill) HasAllProperties(p ...property.SkillProperties) bool {
+func (s Skill) HasAllProperties(p ...property.Key) bool {
 	for _, v := range p {
 		if !s.HasProperty(v) {
 			return false
@@ -105,7 +106,7 @@ func (s Skill) HasAllProperties(p ...property.SkillProperties) bool {
 }
 
 // GetProperty
-func (s Skill) GetProperty(p interface{}) property.Property {
+func (s Skill) GetProperty(p property.Key) property.Property {
 	pstr := property.PropertyToString(p)
 	for _, v := range s.Targeting {
 		if v.Name(property.GameMaster) == pstr {
@@ -127,16 +128,16 @@ func (s Skill) GetProperty(p interface{}) property.Property {
 }
 
 // GetProperty
-func (s Skill) GetPropertyI(p interface{}) property.IntProperty {
+func (s Skill) GetPropertyI(p property.Key) property.IntProperty {
 	return s.GetProperty(p).(property.IntProperty)
 }
 
 // GetProperty
-func (s Skill) GetPropertyF(p interface{}) property.FloatProperty {
+func (s Skill) GetPropertyF(p property.Key) property.FloatProperty {
 	return s.GetProperty(p).(property.FloatProperty)
 }
 
 // GetProperty
-func (s Skill) GetPropertyC(p interface{}) property.IntCounterProperty {
+func (s Skill) GetPropertyC(p property.Key) property.IntCounterProperty {
 	return s.GetProperty(p).(property.IntCounterProperty)
 }

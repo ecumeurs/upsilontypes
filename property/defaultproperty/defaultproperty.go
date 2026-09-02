@@ -1,8 +1,10 @@
 package defaultproperty
 
 import (
-	"github.com/ecumeurs/upsilontypes/property"
+	"fmt"
+
 	"github.com/ecumeurs/upsilontools/tools"
+	"github.com/ecumeurs/upsilontypes/property"
 )
 
 type DefaultIntProperty struct {
@@ -12,32 +14,13 @@ type DefaultIntProperty struct {
 	propertyType        property.PropertyType
 }
 
-// MakeIntProperty
-func MakeIntProperty(name interface{}, value int, minInformationLevel property.InformationLevel, t property.PropertyType) *DefaultIntProperty {
-	switch convname := name.(type) {
-	case property.EntityProperties:
-		return &DefaultIntProperty{
-			name:                convname.String(),
-			value:               value,
-			minInformationLevel: minInformationLevel,
-			propertyType:        t,
-		}
-	case property.SkillProperties:
-		return &DefaultIntProperty{
-			name:                convname.String(),
-			value:               value,
-			minInformationLevel: minInformationLevel,
-			propertyType:        t,
-		}
-	case property.ItemProperties:
-		return &DefaultIntProperty{
-			name:                convname.String(),
-			value:               value,
-			minInformationLevel: minInformationLevel,
-			propertyType:        t,
-		}
-	default:
-		return nil
+// MakeIntProperty builds a DefaultIntProperty for the given property key.
+func MakeIntProperty(name property.Key, value int, minInformationLevel property.InformationLevel, t property.PropertyType) *DefaultIntProperty {
+	return &DefaultIntProperty{
+		name:                name.String(),
+		value:               value,
+		minInformationLevel: minInformationLevel,
+		propertyType:        t,
 	}
 }
 
@@ -110,11 +93,11 @@ type DefaultIntCounterProperty struct {
 	propertyType        property.PropertyType
 }
 
-// MakeIntProperty
-func MakeIntCounterProperty(name interface{}, value, maxvalue int, minInformationLevel property.InformationLevel, t property.PropertyType) *DefaultIntCounterProperty {
-	nname := property.PropertyToString(name)
+// MakeIntCounterProperty builds a DefaultIntCounterProperty for the given property key.
+func MakeIntCounterProperty(name property.Key, value, maxvalue int, minInformationLevel property.InformationLevel, t property.PropertyType) *DefaultIntCounterProperty {
+	nname := name.String()
 	if nname == "" {
-		return nil
+		panic(fmt.Sprintf("defaultproperty: MakeIntCounterProperty called with an empty property key (value=%d, maxvalue=%d); a nil Property must never enter the property map", value, maxvalue))
 	}
 
 	return &DefaultIntCounterProperty{
@@ -212,32 +195,13 @@ type DefaultFloatProperty struct {
 	propertyType        property.PropertyType
 }
 
-// MakeIntProperty
-func MakeFloatProperty(name interface{}, value float64, minInformationLevel property.InformationLevel, pt property.PropertyType) *DefaultFloatProperty {
-	switch convname := name.(type) {
-	case property.EntityProperties:
-		return &DefaultFloatProperty{
-			name:                convname.String(),
-			value:               value,
-			minInformationLevel: minInformationLevel,
-			propertyType:        pt,
-		}
-	case property.SkillProperties:
-		return &DefaultFloatProperty{
-			name:                convname.String(),
-			value:               value,
-			minInformationLevel: minInformationLevel,
-			propertyType:        pt,
-		}
-	case property.ItemProperties:
-		return &DefaultFloatProperty{
-			name:                convname.String(),
-			value:               value,
-			minInformationLevel: minInformationLevel,
-			propertyType:        pt,
-		}
-	default:
-		return nil
+// MakeFloatProperty builds a DefaultFloatProperty for the given property key.
+func MakeFloatProperty(name property.Key, value float64, minInformationLevel property.InformationLevel, pt property.PropertyType) *DefaultFloatProperty {
+	return &DefaultFloatProperty{
+		name:                name.String(),
+		value:               value,
+		minInformationLevel: minInformationLevel,
+		propertyType:        pt,
 	}
 }
 
@@ -306,32 +270,13 @@ type DefaultBoolProperty struct {
 	propertyType        property.PropertyType
 }
 
-// MakeIntProperty
-func MakeBoolProperty(name interface{}, value bool, minInformationLevel property.InformationLevel, pt property.PropertyType) *DefaultBoolProperty {
-	switch convname := name.(type) {
-	case property.EntityProperties:
-		return &DefaultBoolProperty{
-			name:                convname.String(),
-			value:               value,
-			minInformationLevel: minInformationLevel,
-			propertyType:        pt,
-		}
-	case property.SkillProperties:
-		return &DefaultBoolProperty{
-			name:                convname.String(),
-			value:               value,
-			minInformationLevel: minInformationLevel,
-			propertyType:        pt,
-		}
-	case property.ItemProperties:
-		return &DefaultBoolProperty{
-			name:                convname.String(),
-			value:               value,
-			minInformationLevel: minInformationLevel,
-			propertyType:        pt,
-		}
-	default:
-		return nil
+// MakeBoolProperty builds a DefaultBoolProperty for the given property key.
+func MakeBoolProperty(name property.Key, value bool, minInformationLevel property.InformationLevel, pt property.PropertyType) *DefaultBoolProperty {
+	return &DefaultBoolProperty{
+		name:                name.String(),
+		value:               value,
+		minInformationLevel: minInformationLevel,
+		propertyType:        pt,
 	}
 }
 
@@ -400,14 +345,17 @@ type DefaultStringProperty struct {
 	AllowedValues       []string
 }
 
-func MakeStringProperty(name interface{}, value string, minInformationLevel property.InformationLevel, pt property.PropertyType) *DefaultStringProperty {
+// MakeStringProperty builds a DefaultStringProperty for the given property key.
+func MakeStringProperty(name property.Key, value string, minInformationLevel property.InformationLevel, pt property.PropertyType) *DefaultStringProperty {
 	return MakeValidatedStringProperty(name, value, minInformationLevel, pt, nil)
 }
 
-func MakeValidatedStringProperty(name interface{}, value string, minInformationLevel property.InformationLevel, pt property.PropertyType, allowed []string) *DefaultStringProperty {
-	nname := property.PropertyToString(name)
+// MakeValidatedStringProperty builds a DefaultStringProperty for the given property
+// key, restricting Set/SetS to the allowed value set.
+func MakeValidatedStringProperty(name property.Key, value string, minInformationLevel property.InformationLevel, pt property.PropertyType, allowed []string) *DefaultStringProperty {
+	nname := name.String()
 	if nname == "" {
-		return nil
+		panic(fmt.Sprintf("defaultproperty: MakeValidatedStringProperty called with an empty property key (value=%q); a nil Property must never enter the property map", value))
 	}
 
 	return &DefaultStringProperty{

@@ -34,11 +34,12 @@ func StackSize() *defaultproperty.DefaultIntProperty {
 	return defaultproperty.MakeIntProperty(property.StackSize, 0, property.Public, property.Item)
 }
 
-func Value() *defaultproperty.DefaultIntProperty {
-	return defaultproperty.MakeIntProperty(property.Value, 0, property.Public, property.Item)
+// ItemValue builds the item's monetary value property; absence means 0.
+func ItemValue() *defaultproperty.DefaultIntProperty {
+	return defaultproperty.MakeIntProperty(property.ItemValue, 0, property.Public, property.Item)
 }
 
-// ItemType         ItemProperties = "ItemType"         // Absence means None (out of Wearable, Consumable, Usable, Throwable, Ammunitions and None)
+// ItemType         Key = "ItemType"         // Absence means None (out of Wearable, Consumable, Usable, Throwable, Ammunitions and None)
 
 type ItemTypes string
 
@@ -63,7 +64,7 @@ func DefaultItemType() *defaultproperty.DefaultStringProperty {
 	})
 }
 
-// 	Effect           ItemProperties = "Effect"           // Absence means nil: No effect. Effects are Skills. (except None)
+// 	Effect           Key = "Effect"           // Absence means nil: No effect. Effects are Skills. (except None)
 
 type EffectProperty struct {
 	property.Property
@@ -127,7 +128,7 @@ func (bh *EffectProperty) UnapplyBuff(p property.Property) property.Property {
 	return bh.Duplicate() // property.Item can't be buffed.
 }
 
-// 	WeaponType       ItemProperties = "WeaponType"       // Absence means 0: no weapon type (only for Wearable)
+// 	WeaponType       Key = "WeaponType"       // Absence means 0: no weapon type (only for Wearable)
 
 type WeaponTypes string
 
@@ -152,7 +153,7 @@ func DefaultWeaponTypeProperty() *defaultproperty.DefaultStringProperty {
 	})
 }
 
-//ArmorType        ItemProperties = "ArmorType"        // Absence means 0: no armor type (only for Wearable)
+//ArmorType        Key = "ArmorType"        // Absence means 0: no armor type (only for Wearable)
 
 type ArmorTypes string
 
@@ -183,7 +184,7 @@ func DefaultArmorTypeProperty() *defaultproperty.DefaultStringProperty {
 	})
 }
 
-//ToolType         ItemProperties = "ToolType"         // Absence means 0: no tool type (only for Wearable)
+//ToolType         Key = "ToolType"         // Absence means 0: no tool type (only for Wearable)
 
 type ToolTypes string
 
@@ -200,36 +201,13 @@ func DefaultToolTypeProperty() *defaultproperty.DefaultStringProperty {
 	})
 }
 
-func ItemProperty(name property.ItemProperties) property.Property {
-	switch name {
-	case property.Effect:
-		return DefaultEffectProperty()
-	case property.WeaponType:
-		return DefaultWeaponTypeProperty()
-	case property.ArmorType:
-		return DefaultArmorTypeProperty()
-	case property.ToolType:
-		return DefaultToolTypeProperty()
-	case property.Durability:
-		return Durability()
-	case property.Weight:
-		return Weight()
-	case property.Value:
-		return Value()
-	case property.ItemType:
-		return DefaultItemType()
-	case property.WeaponBaseDamage:
-		return WeaponBaseDamage()
-	case property.WeaponRange:
-		return WeaponRange()
-	case property.ArmorRating:
-		return ArmorRating()
-	case property.StackSize:
-		return StackSize()
-	case property.Stackable:
-		return Stackable()
-
+// ItemProperty resolves the default Property for k, registry-backed and
+// scope-filtered to Item. Returns nil for an unknown key or a key not scoped
+// to Item (crash-early: no invented fallback for a wrong-scope key).
+func ItemProperty(k property.Key) property.Property {
+	entry, ok := Lookup(k)
+	if !ok || entry.Scopes&ScopeItem == 0 {
+		return nil
 	}
-
-	return nil
+	return entry.New()
 }
